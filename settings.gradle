@@ -1,0 +1,2 @@
+rootProject.name = '2020-09-otus-java-Kubatko'
+include 'hw01-gradle'

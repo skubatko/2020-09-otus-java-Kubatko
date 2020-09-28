@@ -8,3 +8,5 @@ https://otus.ru/lessons/java-professional
 * группа: java-2020-09
 
 ## Содержание
+* java-01-hw - Домашнее задание к уроку 1 
+Подготовка к курсу. ДЗ
