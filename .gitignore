@@ -48,22 +48,6 @@ local.properties
 /build/
 
 ######################
-# Maven
-######################
-/target/
-!.mvn/wrapper/maven-wrapper.jar
-
-######################
-# Gradle
-######################
-# Ignore Gradle project-specific cache directory
-.gradle/
-# Ignore Gradle build output directory
-/build/
-/out/
-!gradle/wrapper/gradle-wrapper.jar
-
-######################
 # Package Files
 ######################
 *.jar
@@ -85,6 +69,23 @@ local.properties
 hs_err_pid*
 # BlueJ files
 *.ctxt
+
+######################
+# Maven
+######################
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+######################
+# Gradle
+######################
+# Ignore Gradle project-specific cache directory
+.gradle
+# Ignore Gradle build output directory
+/build/
+# Ignore Gradle build output directory
+/out/
+!gradle/wrapper/gradle-wrapper.jar
 
 ######################
 # STS

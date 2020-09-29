@@ -1,0 +1,39 @@
+plugins {
+    id 'idea'
+    id "io.spring.dependency-management" version "1.0.10.RELEASE"
+    id 'com.github.johnrengelman.shadow' version '5.2.0' apply false
+}
+
+idea {
+    project {
+        languageLevel = 15
+    }
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+ext.versions = [
+        guava: "28.2-jre"
+]
+
+ext.guava = [
+        guava: "com.google.guava:guava:$versions.guava"
+]
+
+allprojects {
+    group "ru.skubatko.dev.otus.java"
+
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+
+    apply plugin: "io.spring.dependency-management"
+    dependencyManagement {
+        dependencies {
+            dependency guava.guava
+        }
+    }
+}

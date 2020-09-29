@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow'
+}
+
+version = '0.0.1'
+sourceCompatibility = JavaVersion.VERSION_15
+targetCompatibility = JavaVersion.VERSION_15
+
+dependencies {
+    implementation guava.guava
+}
+
+application {
+    mainClassName = 'ru.skubatko.dev.otus.java.hw01.App'
+}
+
+shadowJar {
+    archiveBaseName.set('hw-01-app')
+    archiveVersion.set('0.0.1')
+    archiveClassifier.set('')
+    manifest {
+        attributes 'Main-Class': application.mainClassName
+    }
+}
+
+tasks.build.dependsOn tasks.shadowJar
