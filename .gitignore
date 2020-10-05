@@ -1,6 +1,12 @@
-######################
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+*.ids
+*.orig
+
 # Eclipse
-######################
 *.pydevproject
 .project
 .metadata
@@ -25,31 +31,18 @@ local.properties
 # PDT-specific
 .buildpath
 
-######################
-# Intellij
-######################
-.idea/
-*.iml
-*.iws
-*.ipr
-*.ids
-*.orig
-
-######################
-# Visual Studio Code
-######################
+# VS Code
 .vscode/
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-/build/
 
-######################
+# NetBeans
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+build/
+
 # Package Files
-######################
 *.jar
 *.war
 *.nar
@@ -58,10 +51,19 @@ local.properties
 *.tar.gz
 *.rar
 *.db
+*.app
+*.exe
 
-######################
+# Maven
+target/
+dist/
+
+# Gradle
+.gradle
+build/
+out/
+
 # Java
-######################
 *.class
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
@@ -70,26 +72,17 @@ hs_err_pid*
 # BlueJ files
 *.ctxt
 
-######################
-# Maven
-######################
-/target/
-!.mvn/wrapper/maven-wrapper.jar
+# Node
+node/
+node_tmp/
+node_modules/
+npm-debug.log.*
+dist/
 
-######################
-# Gradle
-######################
-# Ignore Gradle project-specific cache directory
-.gradle
-# Ignore Gradle build output directory
-/build/
-# Ignore Gradle build output directory
-/out/
-!gradle/wrapper/gradle-wrapper.jar
+# Python
+*.py[cod]
 
-######################
 # STS
-######################
 .apt_generated
 .classpath
 .factorypath
@@ -98,30 +91,16 @@ hs_err_pid*
 .springBeans
 .sts4-cache
 
-######################
-# Node
-######################
-/node/
-node_tmp/
-node_modules/
-npm-debug.log.*
-
-######################
 # SASS
-######################
 .sass-cache/
 
-######################
 # Windows
-######################
 # Windows image file caches
 Thumbs.db
 # Folder config file
 Desktop.ini
 
-######################
-# Mac OSX
-######################
+# Mac OS
 .DS_Store
 .svn
 # Thumbnails
@@ -130,22 +109,31 @@ Desktop.ini
 .Spotlight-V100
 .Trashes
 
-######################
+# Tests
+TEST*.xml
+
 # Directories
-######################
-/bin/
-/deploy/
+bin/
+deploy/
 
-######################
 # Logs
-######################
 *.log
-/log/
-/logs/
+log/
+logs/
 
-######################
+# Media
+*.mp4
+*.tiff
+*.avi
+*.flv
+*.mov
+*.wmv
+
 # Others
-######################
 *.*~
 *~
 .merge_file*
+
+# wrappers
+!maven-wrapper.jar
+!gradle-wrapper.jar
