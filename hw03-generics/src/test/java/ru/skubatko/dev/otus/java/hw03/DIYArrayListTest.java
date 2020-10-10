@@ -30,6 +30,18 @@ class DIYArrayListTest {
         assertThat(list.get(23)).isEqualTo(0);
     }
 
+    @DisplayName("должна добавлять сто элементов при помощи Collections.addAll")
+    @Test
+    void shouldAddHundredItemsByCollectionsAddAll() {
+        for (int i = 0; i < 100; i++) {
+            Collections.addAll(list, i);
+        }
+
+        assertThat(list).hasSize(100);
+        assertThat(list.get(0)).isEqualTo(0);
+        assertThat(list.get(99)).isEqualTo(99);
+    }
+
     @DisplayName("должна копировать листы при помощи Collections.copy для четырех элементов")
     @Test
     void shouldCopyListsByCollectionsCopyForFourItems() {
@@ -74,5 +86,4 @@ class DIYArrayListTest {
     void shouldThrowUnsupportedOperationExceptionWhenMethodNotImplemented() {
         assertThatThrownBy(() -> list.clear()).isInstanceOf(UnsupportedOperationException.class);
     }
-
 }
