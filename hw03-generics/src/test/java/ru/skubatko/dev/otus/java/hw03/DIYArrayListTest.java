@@ -1,6 +1,7 @@
 package ru.skubatko.dev.otus.java.hw03;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -53,6 +54,25 @@ class DIYArrayListTest {
         Collections.copy(dest, list);
 
         assertThat(dest).containsExactlyElementsOf(list);
+    }
+
+    @DisplayName("должна сортировать лист при помощи Collections.sort")
+    @Test
+    void shouldSortListsByCollectionsSort() {
+        Collections.addAll(list, -1, -2, -3, -4, 5, 6, 7, 8, -9, 10, -11, 12, 13, -14, 15, 16, -17, 18, 19, 20);
+
+        List<Integer> expected = new DIYArrayList<>();
+        Collections.addAll(expected, -17, -14, -11, -9, -4, -3, -2, -1, 5, 6, 7, 8, 10, 12, 13, 15, 16, 18, 19, 20);
+
+        Collections.sort(list, Integer::compare);
+
+        assertThat(list).containsExactlyElementsOf(expected);
+    }
+
+    @DisplayName("должна выбрасывать исключение UnsupportedOperationException если метод не имплементирован")
+    @Test
+    void shouldThrowUnsupportedOperationExceptionWhenMethodNotImplemented() {
+        assertThatThrownBy(() -> list.clear()).isInstanceOf(UnsupportedOperationException.class);
     }
 
 }
