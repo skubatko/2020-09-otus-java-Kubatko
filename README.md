@@ -13,3 +13,6 @@ https://otus.ru/lessons/java-professional
 
 * hw03-generics - Домашнее задание к уроку 3 
 Контейнеры и алгоритмы
+
+* hw06-reflections - Домашнее задание к уроку 6
+Аннотации
