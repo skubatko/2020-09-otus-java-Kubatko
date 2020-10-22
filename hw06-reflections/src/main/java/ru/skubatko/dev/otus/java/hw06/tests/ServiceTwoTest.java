@@ -1,9 +1,9 @@
-package ru.skubatko.dev.otus.java.hw06;
+package ru.skubatko.dev.otus.java.hw06.tests;
 
 import ru.skubatko.dev.otus.java.hw06.annotations.Before;
 import ru.skubatko.dev.otus.java.hw06.annotations.Test;
 
-class ServiceTwoTest {
+public class ServiceTwoTest {
 
     @Before
     public void beforeFirst() {
