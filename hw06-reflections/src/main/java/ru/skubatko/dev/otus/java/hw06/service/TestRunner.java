@@ -53,7 +53,7 @@ public class TestRunner {
             log.info("executeTest() - verdict: passed");
             return new TestResultDetails(method, TestResult.PASSED, "success");
         } catch (Exception e) {
-            log.info(String.format("executeTest() - verdict: failed with msg = %s", e.getMessage()));
+            log.info(String.format("executeTest() - verdict: failed with cause = %s", e.getCause()));
             return new TestResultDetails(method, TestResult.FAILED, e.getCause().toString());
         }
     }
@@ -69,7 +69,7 @@ public class TestRunner {
             method.invoke(instance);
             log.info("executeBeforeMethod() - end");
         } catch (Exception e) {
-            log.info(String.format("executeBeforeMethod() - verdict: failed with msg = %s", e.getMessage()));
+            log.info(String.format("executeBeforeMethod() - verdict: failed with cause = %s", e.getCause()));
         }
     }
 
@@ -84,7 +84,7 @@ public class TestRunner {
             method.invoke(instance);
             log.info("executeAfterMethod() - end");
         } catch (Exception e) {
-            log.info(String.format("executeAfterMethod() - verdict: failed with msg = %s", e.getMessage()));
+            log.info(String.format("executeAfterMethod() - verdict: failed with cause = %s", e.getCause()));
         }
     }
 
