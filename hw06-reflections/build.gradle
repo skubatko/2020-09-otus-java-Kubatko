@@ -1,0 +1,14 @@
+plugins {
+    id 'java'
+    id "io.freefair.lombok" version "5.2.1"
+}
+
+group 'ru.skubatko.dev.otus.java'
+version '0.0.1'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+}
