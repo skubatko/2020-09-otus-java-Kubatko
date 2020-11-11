@@ -19,3 +19,6 @@ https://otus.ru/lessons/java-professional
 
 * hw10-byteCodes - Домашнее задание к уроку 10
 Байт код, class-loader, инструментация, asm
+
+* hw12-solid - Домашнее задание к уроку 12
+Концепты проектирования ООП
