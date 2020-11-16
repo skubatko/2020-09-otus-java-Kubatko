@@ -1,0 +1,14 @@
+plugins {
+    id 'java'
+}
+
+group 'ru.skubatko.dev.otus.java'
+version '0.0.1'
+
+dependencies {
+    // Tests
+    implementation 'org.assertj:assertj-core:3.6.2'
+    implementation 'org.mockito:mockito-core:3.3.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+}
