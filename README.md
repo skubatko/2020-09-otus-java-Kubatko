@@ -22,3 +22,6 @@ https://otus.ru/lessons/java-professional
 
 * hw12-solid - Домашнее задание к уроку 12
 Концепты проектирования ООП
+
+* hw15-gof-patterns - Домашнее задание к уроку 15
+Паттерны проектирования GoF
