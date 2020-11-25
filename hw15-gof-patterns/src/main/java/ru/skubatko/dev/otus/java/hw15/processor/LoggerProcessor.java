@@ -3,7 +3,6 @@ package ru.skubatko.dev.otus.java.hw15.processor;
 import ru.skubatko.dev.otus.java.hw15.Message;
 
 public class LoggerProcessor implements Processor {
-    //todo: 3. Сделать процессор, который будет выбрасывать исключение в четную секунду (сделайте тест с гарантированным результатом)
 
     private final Processor processor;
 
