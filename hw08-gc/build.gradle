@@ -5,9 +5,13 @@ plugins {
 group 'ru.skubatko.dev.otus.java'
 version '0.0.1'
 
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
 }
+
