@@ -17,6 +17,9 @@ https://otus.ru/lessons/java-professional
 * hw06-reflections - Домашнее задание к уроку 6
 Аннотации
 
+* hw08-gc - Домашнее задание к уроку 8
+Сборщик мусора
+
 * hw10-byteCodes - Домашнее задание к уроку 10
 Байт код, class-loader, инструментация, asm
 
