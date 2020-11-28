@@ -7,8 +7,6 @@ import ru.skubatko.dev.otus.java.hw15.processor.ProcessorUpperField10;
 import ru.skubatko.dev.otus.java.hw15.processor.homework.EvenSecondExceptionProcessor;
 import ru.skubatko.dev.otus.java.hw15.processor.homework.ExchangeFields11And12Processor;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 public class HomeWork {
@@ -43,6 +41,7 @@ public class HomeWork {
                                .field6("field6")
                                .field10("field10")
                                .build();
+        System.out.println("message1:" + message1);
 
         var result1 = complexProcessor1.handle(message1);
         System.out.println("result1:" + result1);
@@ -63,11 +62,16 @@ public class HomeWork {
                                .field10("field10")
                                .field11("field11")
                                .field12("field12")
-                               .field14(() -> GregorianCalendar.getInstance().get(Calendar.SECOND))
+                               .field13(new ObjectForMessage())
                                .build();
+        System.out.println("message2:" + message2);
 
         var result2 = complexProcessor2.handle(message2);
         System.out.println("result2:" + result2);
+
+        List<String> data = result2.getField13().getData();
+        data.add("mutated");
+        System.out.println("result2 mutated:" + result2);
 
         System.out.println("history of messages:");
         historyListener.getHistory()

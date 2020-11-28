@@ -1,7 +1,14 @@
 package ru.skubatko.dev.otus.java.hw15.processor.homework;
 
 import ru.skubatko.dev.otus.java.hw15.Message;
+import ru.skubatko.dev.otus.java.hw15.ObjectForMessage;
 import ru.skubatko.dev.otus.java.hw15.processor.Processor;
+
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Optional;
 
 public class EvenSecondExceptionProcessor implements Processor {
 
@@ -12,11 +19,18 @@ public class EvenSecondExceptionProcessor implements Processor {
 
     @Override
     public Message process(Message message) {
-        Integer seconds = message.getField14().get();
+        List<String> data = Optional.ofNullable(message.getField13())
+                                    .map(ObjectForMessage::getData)
+                                    .orElseGet(Collections::emptyList);
+        int seconds = data.isEmpty()
+                      ? GregorianCalendar.getInstance().get(Calendar.SECOND)
+                      : Integer.parseInt(data.get(0));
+
         System.out.printf("EvenSecondExceptionProcessor() - seconds = %d%n", seconds);
         if (seconds % 2 == 0) {
             throw new RuntimeException("EvenSecondException");
         }
+
         return message;
     }
 }

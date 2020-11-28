@@ -25,8 +25,8 @@ public class HistoryListener implements Listener {
         private final Message newMsg;
 
         public HistoryMessages(Message oldMsg, Message newMsg) {
-            this.oldMsg = oldMsg;
-            this.newMsg = newMsg;
+            this.oldMsg = Message.copyOf(oldMsg);
+            this.newMsg = Message.copyOf(newMsg);
         }
 
         public Message getOldMsg() {

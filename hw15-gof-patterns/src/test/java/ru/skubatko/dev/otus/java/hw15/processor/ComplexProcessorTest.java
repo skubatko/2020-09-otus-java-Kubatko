@@ -2,6 +2,7 @@ package ru.skubatko.dev.otus.java.hw15.processor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -11,8 +12,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ru.skubatko.dev.otus.java.hw15.Message;
+import ru.skubatko.dev.otus.java.hw15.ObjectForMessage;
 import ru.skubatko.dev.otus.java.hw15.handler.ComplexProcessor;
 import ru.skubatko.dev.otus.java.hw15.listener.Listener;
+import ru.skubatko.dev.otus.java.hw15.listener.homework.HistoryListener;
 import ru.skubatko.dev.otus.java.hw15.processor.homework.EvenSecondExceptionProcessor;
 
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +24,8 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Queue;
+import java.util.stream.Collectors;
 
 class ComplexProcessorTest {
 
@@ -98,12 +103,14 @@ class ComplexProcessorTest {
         verify(listener, times(1)).onUpdated(eq(message), eq(message));
     }
 
-    //todo: 3. Сделать процессор, который будет выбрасывать исключение в четную секунду (сделайте тест с гарантированным результатом)
+    // todo: 3. Сделать процессор, который будет выбрасывать исключение в четную секунду (сделайте тест с гарантированным результатом)
     @Test
     @DisplayName("Тестируем процессор, который выбрасывает исключение в четную секунду")
     void evenSecondExceptionProcessorTest() {
         //given
-        var message = new Message.Builder(1L).field14(() -> 2).build();
+        ObjectForMessage objectForMessage = new ObjectForMessage();
+        objectForMessage.setData(Collections.singletonList("2"));
+        var message = new Message.Builder(1L).field13(objectForMessage).build();
 
         var processor = spy(new EvenSecondExceptionProcessor());
 
@@ -116,6 +123,51 @@ class ComplexProcessorTest {
 
         //then
         verify(processor, times(1)).process(eq(message));
+    }
+
+    // todo: 4. Сделать Listener для ведения истории: старое сообщение - новое (подумайте, как сделать, чтобы сообщения не портились)
+    @Test
+    @DisplayName("Тестируем ведение истории, проверяем, что сообщения не портятся")
+    void HistoryListenerMessageMutationTest() {
+        //given
+        String initial = "initial";
+
+        ObjectForMessage objectForMessage = new ObjectForMessage();
+        objectForMessage.getData().add(initial);
+        var message = new Message.Builder(1L).field13(objectForMessage).build();
+
+        var processor = spy(new EvenSecondExceptionProcessor());
+        var complexProcessor = new ComplexProcessor(Collections.singletonList(processor), e -> {});
+
+        HistoryListener historyListener = new HistoryListener();
+        complexProcessor.addListener(historyListener);
+
+        //when
+        complexProcessor.handle(message);
+
+        String mutated = "mutated";
+        List<String> data = message.getField13().getData();
+        data.clear();
+        data.add(mutated);
+
+        Queue<HistoryListener.HistoryMessages> history = historyListener.getHistory();
+        List<String> oldMsgData = history.stream()
+                                          .map(HistoryListener.HistoryMessages::getOldMsg)
+                                          .map(Message::getField13)
+                                          .flatMap(o -> o.getData().stream())
+                                          .collect(Collectors.toList());
+        List<String> newMsgData = history.stream()
+                                          .map(HistoryListener.HistoryMessages::getNewMsg)
+                                          .map(Message::getField13)
+                                          .flatMap(o -> o.getData().stream())
+                                          .collect(Collectors.toList());
+
+        //then
+        assertThat(message.getField13().getData().get(0)).isEqualTo(mutated);
+        assertThat(oldMsgData).containsOnly(initial);
+        assertThat(newMsgData).containsOnly(initial);
+
+        verify(processor, times(1)).process(any(Message.class));
     }
 
     private static class TestException extends RuntimeException {
