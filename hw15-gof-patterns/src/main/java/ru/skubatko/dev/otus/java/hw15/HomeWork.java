@@ -2,6 +2,7 @@ package ru.skubatko.dev.otus.java.hw15;
 
 import ru.skubatko.dev.otus.java.hw15.handler.ComplexProcessor;
 import ru.skubatko.dev.otus.java.hw15.listener.homework.HistoryListener;
+import ru.skubatko.dev.otus.java.hw15.listener.homework.State;
 import ru.skubatko.dev.otus.java.hw15.processor.ProcessorConcatFields;
 import ru.skubatko.dev.otus.java.hw15.processor.ProcessorUpperField10;
 import ru.skubatko.dev.otus.java.hw15.processor.homework.EvenSecondExceptionProcessor;
@@ -74,9 +75,11 @@ public class HomeWork {
         System.out.println("result2 mutated:" + result2);
 
         System.out.println("history of messages:");
-        historyListener.getHistory()
-                .forEach(history -> System.out.printf("---%nold msg = [%s]%nnew msg = [%s]%n",
-                        history.getOldMsg(), history.getNewMsg()));
+        State state = historyListener.restoreState();
+        System.out.println(state);
+
+        state = historyListener.restoreState();
+        System.out.println(state);
 
         complexProcessor1.removeListener(historyListener);
         complexProcessor2.removeListener(historyListener);

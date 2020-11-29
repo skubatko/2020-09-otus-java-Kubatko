@@ -16,6 +16,7 @@ import ru.skubatko.dev.otus.java.hw15.ObjectForMessage;
 import ru.skubatko.dev.otus.java.hw15.handler.ComplexProcessor;
 import ru.skubatko.dev.otus.java.hw15.listener.Listener;
 import ru.skubatko.dev.otus.java.hw15.listener.homework.HistoryListener;
+import ru.skubatko.dev.otus.java.hw15.listener.homework.State;
 import ru.skubatko.dev.otus.java.hw15.processor.homework.EvenSecondExceptionProcessor;
 
 import org.junit.jupiter.api.DisplayName;
@@ -24,8 +25,6 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Queue;
-import java.util.stream.Collectors;
 
 class ComplexProcessorTest {
 
@@ -150,22 +149,14 @@ class ComplexProcessorTest {
         data.clear();
         data.add(mutated);
 
-        Queue<HistoryListener.HistoryMessages> history = historyListener.getHistory();
-        List<String> oldMsgData = history.stream()
-                                          .map(HistoryListener.HistoryMessages::getOldMsg)
-                                          .map(Message::getField13)
-                                          .flatMap(o -> o.getData().stream())
-                                          .collect(Collectors.toList());
-        List<String> newMsgData = history.stream()
-                                          .map(HistoryListener.HistoryMessages::getNewMsg)
-                                          .map(Message::getField13)
-                                          .flatMap(o -> o.getData().stream())
-                                          .collect(Collectors.toList());
+        State state = historyListener.restoreState();
+        String oldMsgData = state.getMessageHistory().getOldMsg().getField13().getData().get(0);
+        String newMsgData = state.getMessageHistory().getNewMsg().getField13().getData().get(0);
 
         //then
         assertThat(message.getField13().getData().get(0)).isEqualTo(mutated);
-        assertThat(oldMsgData).containsOnly(initial);
-        assertThat(newMsgData).containsOnly(initial);
+        assertThat(oldMsgData).isEqualTo(initial);
+        assertThat(newMsgData).isEqualTo(initial);
 
         verify(processor, times(1)).process(any(Message.class));
     }
