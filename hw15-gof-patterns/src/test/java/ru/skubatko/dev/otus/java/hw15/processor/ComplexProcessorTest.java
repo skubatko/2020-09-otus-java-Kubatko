@@ -22,6 +22,7 @@ import ru.skubatko.dev.otus.java.hw15.processor.homework.EvenSecondExceptionProc
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -107,11 +108,11 @@ class ComplexProcessorTest {
     @DisplayName("Тестируем процессор, который выбрасывает исключение в четную секунду")
     void evenSecondExceptionProcessorTest() {
         //given
-        ObjectForMessage objectForMessage = new ObjectForMessage();
-        objectForMessage.setData(Collections.singletonList("2"));
-        var message = new Message.Builder(1L).field13(objectForMessage).build();
+        var message = new Message.Builder(1L).build();
 
-        var processor = spy(new EvenSecondExceptionProcessor());
+        var processor =
+                spy(new EvenSecondExceptionProcessor(
+                        ()-> LocalDateTime.now().withSecond(2)));
 
         var complexProcessor = new ComplexProcessor(Collections.singletonList(processor), (ex) -> {
             throw new TestException(ex.getMessage());
@@ -135,7 +136,7 @@ class ComplexProcessorTest {
         objectForMessage.getData().add(initial);
         var message = new Message.Builder(1L).field13(objectForMessage).build();
 
-        var processor = spy(new EvenSecondExceptionProcessor());
+        var processor = spy(new EvenSecondExceptionProcessor(LocalDateTime::now));
         var complexProcessor = new ComplexProcessor(Collections.singletonList(processor), e -> {});
 
         HistoryListener historyListener = new HistoryListener();

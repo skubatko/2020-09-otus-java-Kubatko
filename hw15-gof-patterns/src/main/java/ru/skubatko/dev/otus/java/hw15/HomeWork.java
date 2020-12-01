@@ -8,6 +8,7 @@ import ru.skubatko.dev.otus.java.hw15.processor.ProcessorUpperField10;
 import ru.skubatko.dev.otus.java.hw15.processor.homework.EvenSecondExceptionProcessor;
 import ru.skubatko.dev.otus.java.hw15.processor.homework.ExchangeFields11And12Processor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class HomeWork {
@@ -49,7 +50,7 @@ public class HomeWork {
 
         var processors2 = List.of(
                 new ExchangeFields11And12Processor(),
-                new EvenSecondExceptionProcessor()
+                new EvenSecondExceptionProcessor(LocalDateTime::now)
         );
 
         var complexProcessor2 = new ComplexProcessor(processors2, ex -> System.out.println(ex.getMessage()));
