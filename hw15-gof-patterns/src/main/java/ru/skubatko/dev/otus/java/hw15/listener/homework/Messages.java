@@ -4,9 +4,7 @@ import ru.skubatko.dev.otus.java.hw15.Message;
 import ru.skubatko.dev.otus.java.hw15.ObjectForMessage;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public final class Messages {
 
@@ -14,10 +12,13 @@ public final class Messages {
 
     // todo: 4. Сделать Listener для ведения истории: старое сообщение - новое (подумайте, как сделать, чтобы сообщения не портились)
     public static Message copyOf(Message message) {
+        List<String> data = new ArrayList<>();
+        ObjectForMessage field13 = message.getField13();
+        if (field13 != null && field13.getData()!=null) {
+            data = field13.getData();
+        }
+
         ObjectForMessage objectForMessage = new ObjectForMessage();
-        List<String> data = Optional.ofNullable(message.getField13())
-                                    .map(ObjectForMessage::getData)
-                                    .orElseGet(Collections::emptyList);
         objectForMessage.setData(new ArrayList<>(data));
 
         return new Message.Builder(message.getId())
