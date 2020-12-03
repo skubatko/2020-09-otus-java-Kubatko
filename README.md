@@ -22,3 +22,6 @@ https://otus.ru/lessons/java-professional
 
 * hw12-solid - Домашнее задание к уроку 12
 Концепты проектирования ООП
+
+* hw16-serialization - Домашнее задание к уроку 16
+Сериализация
