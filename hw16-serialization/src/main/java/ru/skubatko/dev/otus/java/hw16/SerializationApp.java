@@ -1,5 +1,7 @@
 package ru.skubatko.dev.otus.java.hw16;
 
+import ru.skubatko.dev.otus.java.hw16.serializer.MyGson;
+
 import com.google.gson.Gson;
 
 import java.util.List;
