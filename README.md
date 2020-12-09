@@ -28,3 +28,6 @@ https://otus.ru/lessons/java-professional
 
 * hw16-serialization - Домашнее задание к уроку 16
 Сериализация
+
+* hw18-jdbc - Домашнее задание к уроку 18
+JDBC
