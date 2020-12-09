@@ -25,3 +25,6 @@ https://otus.ru/lessons/java-professional
 
 * hw15-gof-patterns - Домашнее задание к уроку 15
 Паттерны проектирования GoF
+
+* hw16-serialization - Домашнее задание к уроку 16
+Сериализация
