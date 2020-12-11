@@ -7,10 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class JdbcMapperImpl<T> implements JdbcMapper<T> {
 
@@ -35,13 +38,28 @@ public final class JdbcMapperImpl<T> implements JdbcMapper<T> {
     public void insert(T objectData) {
         log.debug("insert() - start: objectData = {}", objectData);
         try {
-            dbExecutor.executeInsert(getConnection(), entitySQLMetaData.getInsertSql(),
-                    Collections.singletonList(objectData));
+            String query = entitySQLMetaData.getInsertSql();
+            log.trace("insert() - trace: query = {}", query);
+
+            List<Object> params = entityClassMetaData.getFieldsWithoutId().stream()
+                                          .map(field -> getFieldValue(field, objectData))
+                                          .collect(Collectors.toList());
+            log.trace("insert() - trace: params = {}", params);
+            dbExecutor.executeInsert(getConnection(), query, params);
         } catch (Exception e) {
             log.debug("insert() - verdict: cannot be performed");
             throw new JdbcMapperException(e);
         }
         log.debug("insert() - end");
+    }
+
+    private Object getFieldValue(Field field, T objectData) {
+        try {
+            field.setAccessible(true);
+            return field.get(objectData);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

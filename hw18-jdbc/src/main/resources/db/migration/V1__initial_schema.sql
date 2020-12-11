@@ -4,4 +4,3 @@ create table client
     name varchar(50),
     age  int
 );
-
