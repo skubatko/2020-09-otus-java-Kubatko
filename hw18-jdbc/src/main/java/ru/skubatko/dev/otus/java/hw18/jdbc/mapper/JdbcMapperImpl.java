@@ -38,32 +38,36 @@ public final class JdbcMapperImpl<T> implements JdbcMapper<T> {
     public void insert(T objectData) {
         log.debug("insert() - start: objectData = {}", objectData);
         try {
-            String query = entitySQLMetaData.getInsertSql();
-            log.trace("insert() - trace: query = {}", query);
-
-            List<Object> params = entityClassMetaData.getFieldsWithoutId().stream()
-                                          .map(field -> getFieldValue(field, objectData))
-                                          .collect(Collectors.toList());
-            log.trace("insert() - trace: params = {}", params);
-            long id = dbExecutor.executeInsert(getConnection(), query, params);
-
             Field idField = entityClassMetaData.getIdField();
-            idField.setAccessible(true);
-            idField.set(objectData, id);
+            Object id = getFieldValue(idField, objectData);
+            if (id instanceof Long && (long) id == 0L) {
+                String query = entitySQLMetaData.getInsertAutoincrementSql();
+                log.trace("insert() - trace: query = {}", query);
+
+                List<Object> params = entityClassMetaData.getFieldsWithoutId().stream()
+                                              .map(field -> getFieldValue(field, objectData))
+                                              .collect(Collectors.toList());
+                log.trace("insert() - trace: params = {}", params);
+                String insertedId = dbExecutor.executeInsert(getConnection(), query, params);
+
+                idField.setAccessible(true);
+                idField.set(objectData, Long.valueOf(insertedId));
+            } else {
+                String query = entitySQLMetaData.getInsertSql();
+                log.trace("insert() - trace: query = {}", query);
+
+                List<Object> params = entityClassMetaData.getAllFields().stream()
+                                              .map(field -> getFieldValue(field, objectData))
+                                              .collect(Collectors.toList());
+                log.trace("insert() - trace: params = {}", params);
+
+                dbExecutor.executeInsert(getConnection(), query, params);
+            }
         } catch (Exception e) {
             log.debug("insert() - verdict: cannot be performed");
             throw new JdbcMapperException(e);
         }
         log.debug("insert() - end");
-    }
-
-    private Object getFieldValue(Field field, T objectData) {
-        try {
-            field.setAccessible(true);
-            return field.get(objectData);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -81,20 +85,40 @@ public final class JdbcMapperImpl<T> implements JdbcMapper<T> {
 
     @Override
     public void insertOrUpdate(T objectData) {
-        // FIXME: should check if objectData exists and then insert or update
+        log.debug("insertOrUpdate() - start: objectData = {}", objectData);
         try {
-            dbExecutor.executeInsert(getConnection(), entitySQLMetaData.getInsertSql(),
-                    Collections.singletonList(objectData));
+            Field idField = entityClassMetaData.getIdField();
+            Object id = getFieldValue(idField, objectData);
+            if (id != null && existsById(id)) {
+                update(objectData);
+            } else {
+                insert(objectData);
+            }
         } catch (Exception e) {
+            log.debug("insertOrUpdate() - verdict: cannot be performed");
             throw new JdbcMapperException(e);
         }
+        log.debug("insertOrUpdate() - end");
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean existsById(Object id) throws SQLException {
+        return dbExecutor.executeSelect(getConnection(), entitySQLMetaData.getSelectByIdSql(), id,
+                rs -> {
+                    try {
+                        return rs.next() ? (T) new Object() : null;
+                    } catch (SQLException e) {
+                        throw new JdbcMapperException(e);
+                    }
+                }).isPresent();
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public T findById(Object id, Class<T> clazz) {
+        log.debug("findById() - start: id = {}, clazz = {}", id, clazz);
         try {
-            return dbExecutor.executeSelect(getConnection(), entitySQLMetaData.getSelectByIdSql(), id,
+            T entity = dbExecutor.executeSelect(getConnection(), entitySQLMetaData.getSelectByIdSql(), id,
                     rs -> {
                         try {
                             if (rs.next()) {
@@ -108,7 +132,11 @@ public final class JdbcMapperImpl<T> implements JdbcMapper<T> {
                         }
                         return null;
                     }).orElse(null);
+
+            log.debug("findById() - end: entity = {}", entity);
+            return entity;
         } catch (Exception e) {
+            log.debug("findById() - verdict: cannot be performed");
             throw new JdbcMapperException(e);
         }
     }
@@ -127,6 +155,15 @@ public final class JdbcMapperImpl<T> implements JdbcMapper<T> {
             };
         } catch (SQLException e) {
             throw new JdbcMapperException(e);
+        }
+    }
+
+    private Object getFieldValue(Field field, T objectData) {
+        try {
+            field.setAccessible(true);
+            return field.get(objectData);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 

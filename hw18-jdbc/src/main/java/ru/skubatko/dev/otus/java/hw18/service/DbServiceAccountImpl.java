@@ -25,7 +25,7 @@ public class DbServiceAccountImpl implements DBServiceClient<Account, String> {
     public String saveEntity(Account account) {
         sessionManager.beginSession();
         try {
-            jdbcMapper.insert(account);
+            jdbcMapper.insertOrUpdate(account);
             sessionManager.commitSession();
 
             logger.info("created account: {}", account);

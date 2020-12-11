@@ -33,12 +33,20 @@ public final class EntitySQLMetaDataImpl implements EntitySQLMetaData {
 
     @Override
     public String getInsertSql() {
-        List<Field> fieldsWithoutId = entityClassMetaData.getFieldsWithoutId();
-        String fields = fieldsWithoutId.stream().map(Field::getName).map(String::toLowerCase).collect(Collectors.joining(", "));
-        String values = Stream.generate(() -> "?").limit(fieldsWithoutId.size()).collect(Collectors.joining(", "));
+        return getInsertQuery(entityClassMetaData.getAllFields());
+    }
+
+    @Override
+    public String getInsertAutoincrementSql() {
+        return getInsertQuery(entityClassMetaData.getFieldsWithoutId());
+    }
+
+    private String getInsertQuery(List<Field> fields) {
+        String queryFields = fields.stream().map(Field::getName).map(String::toLowerCase).collect(Collectors.joining(", "));
+        String queryValues = Stream.generate(() -> "?").limit(fields.size()).collect(Collectors.joining(", "));
         String query = String.format("insert into %s(%s) values (%s)",
-                entityClassMetaData.getName(), fields, values);
-        log.trace("getInsertSql() - trace: query = {}", query);
+                entityClassMetaData.getName(), queryFields, queryValues);
+        log.trace("getInsertQuery() - trace: query = {}", query);
         return query;
     }
 
