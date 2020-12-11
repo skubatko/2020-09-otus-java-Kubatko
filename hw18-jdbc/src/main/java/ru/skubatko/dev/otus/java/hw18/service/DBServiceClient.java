@@ -12,5 +12,5 @@ public interface DBServiceClient<T, K> {
 
     K saveEntity(T entity);
 
-    Optional<T> getEntity(K id);
+    Optional<T> getEntityById(K id);
 }

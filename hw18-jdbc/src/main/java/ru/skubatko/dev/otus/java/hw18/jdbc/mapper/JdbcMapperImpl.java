@@ -11,7 +11,6 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,8 +73,16 @@ public final class JdbcMapperImpl<T> implements JdbcMapper<T> {
     public void update(T objectData) {
         log.debug("update() - start: objectData = {}", objectData);
         try {
-            dbExecutor.executeInsert(getConnection(), entitySQLMetaData.getUpdateSql(),
-                    Collections.singletonList(objectData));
+            String query = entitySQLMetaData.getUpdateSql();
+            log.trace("update() - trace: query = {}", query);
+
+            List<Object> params = entityClassMetaData.getFieldsWithoutId().stream()
+                                          .map(field -> getFieldValue(field, objectData))
+                                          .collect(Collectors.toList());
+            params.add(getFieldValue(entityClassMetaData.getIdField(), objectData));
+            log.trace("update() - trace: params = {}", params);
+
+            dbExecutor.executeInsert(getConnection(), query, params);
         } catch (Exception e) {
             log.debug("update() - verdict: cannot be performed");
             throw new JdbcMapperException(e);

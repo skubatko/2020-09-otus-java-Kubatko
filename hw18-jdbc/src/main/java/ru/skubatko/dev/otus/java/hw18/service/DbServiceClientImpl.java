@@ -25,10 +25,10 @@ public class DbServiceClientImpl implements DBServiceClient<Client, Long> {
     public Long saveEntity(Client client) {
         sessionManager.beginSession();
         try {
-            jdbcMapper.insert(client);
+            jdbcMapper.insertOrUpdate(client);
             sessionManager.commitSession();
 
-            logger.info("created client: {}", client);
+            logger.info("saved client: {}", client);
             return client.getId();
         } catch (Exception e) {
             sessionManager.rollbackSession();
@@ -37,7 +37,7 @@ public class DbServiceClientImpl implements DBServiceClient<Client, Long> {
     }
 
     @Override
-    public Optional<Client> getEntity(Long id) {
+    public Optional<Client> getEntityById(Long id) {
         sessionManager.beginSession();
         try {
             Client client = jdbcMapper.findById(id, Client.class);

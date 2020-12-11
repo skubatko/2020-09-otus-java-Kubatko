@@ -28,7 +28,7 @@ public class DbServiceAccountImpl implements DBServiceClient<Account, String> {
             jdbcMapper.insertOrUpdate(account);
             sessionManager.commitSession();
 
-            logger.info("created account: {}", account);
+            logger.info("saved account: {}", account);
             return account.getId();
         } catch (Exception e) {
             sessionManager.rollbackSession();
@@ -37,7 +37,7 @@ public class DbServiceAccountImpl implements DBServiceClient<Account, String> {
     }
 
     @Override
-    public Optional<Account> getEntity(String id) {
+    public Optional<Account> getEntityById(String id) {
         sessionManager.beginSession();
         try {
             Account account = jdbcMapper.findById(id, Account.class);

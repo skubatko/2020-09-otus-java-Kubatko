@@ -25,7 +25,7 @@ import java.util.UUID;
 
 public class HomeWork {
 
-    private static final Logger logger = LoggerFactory.getLogger(HomeWork.class);
+    private static final Logger log = LoggerFactory.getLogger(HomeWork.class);
 
     public static void main(String[] args) {
 // Общая часть
@@ -41,12 +41,21 @@ public class HomeWork {
 
 // Код дальше должен остаться, т.е. clientDao должен использоваться
         var dbServiceClient = new DbServiceClientImpl(clientDao, sessionManager);
-        var clientId = dbServiceClient.saveEntity(new Client(0, "dbServiceClient", 17));
-        Optional<Client> clientOptional = dbServiceClient.getEntity(clientId);
 
+        var clientId = dbServiceClient.saveEntity(new Client(0, "dbServiceClient", 17));
+
+        Optional<Client> clientOptional = dbServiceClient.getEntityById(clientId);
         clientOptional.ifPresentOrElse(
-                client -> logger.info("created client, name:{}", client.getName()),
-                () -> logger.info("client was not created")
+                client -> log.info("created client, name:{}", client.getName()),
+                () -> log.info("client was not created")
+        );
+
+        dbServiceClient.saveEntity(new Client(clientId, "dbServiceClientUpdated", 25));
+
+        clientOptional = dbServiceClient.getEntityById(clientId);
+        clientOptional.ifPresentOrElse(
+                client -> log.info("updated client, name:{}", client.getName()),
+                () -> log.info("client was not updated")
         );
 
 // Работа со счетом
@@ -56,23 +65,34 @@ public class HomeWork {
         JdbcMapper<Account> accountDao = new JdbcMapperImpl<>(sessionManager, dbAccountExecutor, accountSQLMetaData, accountClassMetaData);
 
         var dbServiceAccount = new DbServiceAccountImpl(accountDao, sessionManager);
-        var accountId = dbServiceAccount.saveEntity(new Account(UUID.randomUUID().toString(), "dbServiceAccountType", 17.78));
-        Optional<Account> accountOptional = dbServiceAccount.getEntity(accountId);
 
+        String accountId = UUID.randomUUID().toString();
+
+        dbServiceAccount.saveEntity(new Account(accountId, "dbServiceAccountType", 17.78));
+
+        Optional<Account> accountOptional = dbServiceAccount.getEntityById(accountId);
         accountOptional.ifPresentOrElse(
-                account -> logger.info("created account, type:{}", account.getType()),
-                () -> logger.info("account was not created")
+                account -> log.info("created account, type:{}", account.getType()),
+                () -> log.info("account was not created")
+        );
+
+        dbServiceAccount.saveEntity(new Account(accountId, "dbServiceAccountTypeUpdated", 12.78));
+
+        accountOptional = dbServiceAccount.getEntityById(accountId);
+        accountOptional.ifPresentOrElse(
+                account -> log.info("updated account, type:{}", account.getType()),
+                () -> log.info("account was not updated")
         );
     }
 
     private static void flywayMigrations(DataSource dataSource) {
-        logger.info("db migration started...");
+        log.info("db migration started...");
         var flyway = Flyway.configure()
                              .dataSource(dataSource)
                              .locations("classpath:/db/migration")
                              .load();
         flyway.migrate();
-        logger.info("db migration finished.");
-        logger.info("***");
+        log.info("db migration finished.");
+        log.info("***");
     }
 }
