@@ -1,12 +1,16 @@
 package ru.skubatko.dev.otus.java.hw18.service;
 
-import ru.skubatko.dev.otus.java.hw18.model.Client;
-
 import java.util.Optional;
 
-public interface DBServiceClient {
+/**
+ * Сервис работы с БД.
+ *
+ * @param <T> entity
+ * @param <K> primary key type
+ */
+public interface DBServiceClient<T, K> {
 
-    long saveClient(Client client);
+    K saveEntity(T entity);
 
-    Optional<Client> getClient(long id);
+    Optional<T> getEntity(K id);
 }
