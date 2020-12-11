@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
@@ -90,35 +91,17 @@ public final class JdbcMapperImpl<T> implements JdbcMapper<T> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public T findById(Object id, Class<T> clazz) {
         try {
             return dbExecutor.executeSelect(getConnection(), entitySQLMetaData.getSelectByIdSql(), id,
                     rs -> {
                         try {
                             if (rs.next()) {
-                                Constructor<T> constructor = (Constructor<T>) clazz.getDeclaredConstructors()[0];
-                                List<Field> allFields = entityClassMetaData.getAllFields();
-                                int numberOfParameters = allFields.size();
-                                Object[] initArgs = new Object[numberOfParameters];
-                                for (int i = 0; i < numberOfParameters; i++) {
-                                    Field field = allFields.get(i);
-                                    Class<?> type = field.getType();
-                                    String name = field.getName();
-                                    switch (type.getSimpleName()) {
-                                        case "long":
-                                            initArgs[i] = rs.getLong(name);
-                                            break;
-                                        case "int":
-                                            initArgs[i] = rs.getInt(name);
-                                            break;
-                                        case "String":
-                                            initArgs[i] = rs.getString(name);
-                                            break;
-                                        default:
-                                            throw new JdbcMapperException("Unsupported type of column");
-                                    }
-                                }
-                                return constructor.newInstance(initArgs);
+                                Object[] initArgs = entityClassMetaData.getAllFields().stream()
+                                                            .map(field -> getQueryResultValue(field, rs))
+                                                            .toArray();
+                                return ((Constructor<T>) clazz.getDeclaredConstructors()[0]).newInstance(initArgs);
                             }
                         } catch (SQLException | ReflectiveOperationException e) {
                             throw new JdbcMapperException(e);
@@ -126,6 +109,23 @@ public final class JdbcMapperImpl<T> implements JdbcMapper<T> {
                         return null;
                     }).orElse(null);
         } catch (Exception e) {
+            throw new JdbcMapperException(e);
+        }
+    }
+
+    private Object getQueryResultValue(Field field, ResultSet rs) {
+        try {
+            Class<?> type = field.getType();
+            String name = field.getName();
+            return switch (type.getSimpleName()) {
+                case "long" -> rs.getLong(name);
+                case "int" -> rs.getInt(name);
+                case "float" -> rs.getFloat(name);
+                case "double" -> rs.getDouble(name);
+                case "String" -> rs.getString(name);
+                default -> throw new JdbcMapperException("Unsupported type of column");
+            };
+        } catch (SQLException e) {
             throw new JdbcMapperException(e);
         }
     }
