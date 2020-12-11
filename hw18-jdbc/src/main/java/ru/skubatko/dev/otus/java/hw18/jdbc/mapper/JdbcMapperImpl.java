@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Parameter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -45,7 +44,11 @@ public final class JdbcMapperImpl<T> implements JdbcMapper<T> {
                                           .map(field -> getFieldValue(field, objectData))
                                           .collect(Collectors.toList());
             log.trace("insert() - trace: params = {}", params);
-            dbExecutor.executeInsert(getConnection(), query, params);
+            long id = dbExecutor.executeInsert(getConnection(), query, params);
+
+            Field idField = entityClassMetaData.getIdField();
+            idField.setAccessible(true);
+            idField.set(objectData, id);
         } catch (Exception e) {
             log.debug("insert() - verdict: cannot be performed");
             throw new JdbcMapperException(e);
@@ -94,13 +97,26 @@ public final class JdbcMapperImpl<T> implements JdbcMapper<T> {
                         try {
                             if (rs.next()) {
                                 Constructor<T> constructor = (Constructor<T>) clazz.getDeclaredConstructors()[0];
-                                Parameter[] parameters = constructor.getParameters();
-                                int numberOfParameters = parameters.length;
+                                List<Field> allFields = entityClassMetaData.getAllFields();
+                                int numberOfParameters = allFields.size();
                                 Object[] initArgs = new Object[numberOfParameters];
                                 for (int i = 0; i < numberOfParameters; i++) {
-                                    Class<?> type = parameters[i].getType();
-                                    String name = parameters[i].getName();
-                                    initArgs[i] = rs.getObject(name, type);
+                                    Field field = allFields.get(i);
+                                    Class<?> type = field.getType();
+                                    String name = field.getName();
+                                    switch (type.getSimpleName()) {
+                                        case "long":
+                                            initArgs[i] = rs.getLong(name);
+                                            break;
+                                        case "int":
+                                            initArgs[i] = rs.getInt(name);
+                                            break;
+                                        case "String":
+                                            initArgs[i] = rs.getString(name);
+                                            break;
+                                        default:
+                                            throw new JdbcMapperException("Unsupported type of column");
+                                    }
                                 }
                                 return constructor.newInstance(initArgs);
                             }
