@@ -22,7 +22,6 @@ import javax.sql.DataSource;
 import java.util.Optional;
 import java.util.UUID;
 
-
 public class HomeWork {
 
     private static final Logger log = LoggerFactory.getLogger(HomeWork.class);
@@ -76,7 +75,7 @@ public class HomeWork {
                 () -> log.info("account was not created")
         );
 
-        dbServiceAccount.saveEntity(new Account(accountId, "dbServiceAccountTypeUpdated", 12.78));
+        dbServiceAccount.saveEntity(new Account(accountId, "dbServiceAccountTypeUpdated", 12.39));
 
         accountOptional = dbServiceAccount.getEntityById(accountId);
         accountOptional.ifPresentOrElse(

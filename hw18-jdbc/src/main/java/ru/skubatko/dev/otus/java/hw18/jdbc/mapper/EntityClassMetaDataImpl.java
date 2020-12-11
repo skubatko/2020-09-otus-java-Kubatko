@@ -26,14 +26,9 @@ public final class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> 
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Constructor<T> getConstructor() {
-        try {
-            return clazz.getDeclaredConstructor();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return ((Constructor<T>) clazz.getDeclaredConstructors()[0]);
     }
 
     @Override

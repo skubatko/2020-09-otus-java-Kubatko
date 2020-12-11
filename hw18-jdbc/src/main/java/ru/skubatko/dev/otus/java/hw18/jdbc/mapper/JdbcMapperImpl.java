@@ -6,7 +6,6 @@ import ru.skubatko.dev.otus.java.hw18.jdbc.sessionmanager.SessionManagerJdbc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -37,36 +36,41 @@ public final class JdbcMapperImpl<T> implements JdbcMapper<T> {
     public void insert(T objectData) {
         log.debug("insert() - start: objectData = {}", objectData);
         try {
-            Field idField = entityClassMetaData.getIdField();
-            Object id = getFieldValue(idField, objectData);
+            Object id = getFieldValue(entityClassMetaData.getIdField(), objectData);
             if (id instanceof Long && (long) id == 0L) {
-                String query = entitySQLMetaData.getInsertAutoincrementSql();
-                log.trace("insert() - trace: query = {}", query);
-
-                List<Object> params = entityClassMetaData.getFieldsWithoutId().stream()
-                                              .map(field -> getFieldValue(field, objectData))
-                                              .collect(Collectors.toList());
-                log.trace("insert() - trace: params = {}", params);
-                String insertedId = dbExecutor.executeInsert(getConnection(), query, params);
-
-                idField.setAccessible(true);
-                idField.set(objectData, Long.valueOf(insertedId));
-            } else {
-                String query = entitySQLMetaData.getInsertSql();
-                log.trace("insert() - trace: query = {}", query);
-
-                List<Object> params = entityClassMetaData.getAllFields().stream()
-                                              .map(field -> getFieldValue(field, objectData))
-                                              .collect(Collectors.toList());
-                log.trace("insert() - trace: params = {}", params);
-
-                dbExecutor.executeInsert(getConnection(), query, params);
+                insertAutoincrement(objectData);
+                return;
             }
+
+            String query = entitySQLMetaData.getInsertSql();
+            log.trace("insert() - trace: query = {}", query);
+
+            List<Object> params = entityClassMetaData.getAllFields().stream()
+                                          .map(field -> getFieldValue(field, objectData))
+                                          .collect(Collectors.toList());
+            log.trace("insert() - trace: params = {}", params);
+
+            dbExecutor.executeInsert(getConnection(), query, params);
         } catch (Exception e) {
             log.debug("insert() - verdict: cannot be performed");
             throw new JdbcMapperException(e);
         }
         log.debug("insert() - end");
+    }
+
+    private void insertAutoincrement(T objectData) throws Exception {
+        String query = entitySQLMetaData.getInsertAutoincrementSql();
+        log.trace("insertAutoincrement() - trace: query = {}", query);
+
+        List<Object> params = entityClassMetaData.getFieldsWithoutId().stream()
+                                      .map(field -> getFieldValue(field, objectData))
+                                      .collect(Collectors.toList());
+        log.trace("insertAutoincrement() - trace: params = {}", params);
+        String insertedId = dbExecutor.executeInsert(getConnection(), query, params);
+
+        Field idField = entityClassMetaData.getIdField();
+        idField.setAccessible(true);
+        idField.set(objectData, Long.valueOf(insertedId));
     }
 
     @Override
@@ -121,7 +125,6 @@ public final class JdbcMapperImpl<T> implements JdbcMapper<T> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public T findById(Object id, Class<T> clazz) {
         log.debug("findById() - start: id = {}, clazz = {}", id, clazz);
         try {
@@ -132,7 +135,7 @@ public final class JdbcMapperImpl<T> implements JdbcMapper<T> {
                                 Object[] initArgs = entityClassMetaData.getAllFields().stream()
                                                             .map(field -> getQueryResultValue(field, rs))
                                                             .toArray();
-                                return ((Constructor<T>) clazz.getDeclaredConstructors()[0]).newInstance(initArgs);
+                                return entityClassMetaData.getConstructor().newInstance(initArgs);
                             }
                         } catch (SQLException | ReflectiveOperationException e) {
                             throw new JdbcMapperException(e);
