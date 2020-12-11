@@ -1,10 +1,12 @@
 package ru.skubatko.dev.otus.java.hw18.jdbc.mapper;
 
 /**
- * Сохратяет объект в базу, читает объект из базы
+ * Сохраняет объект в базу, читает объект из базы
+ *
  * @param <T>
  */
 public interface JdbcMapper<T> {
+
     void insert(T objectData);
 
     void update(T objectData);
