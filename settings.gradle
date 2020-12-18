@@ -7,4 +7,4 @@ include 'hw12-solid'
 include 'hw15-gof-patterns'
 include 'hw16-serialization'
 include 'hw18-jdbc'
-
+include 'hw20-JPQL'
