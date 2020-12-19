@@ -1,97 +1,86 @@
 package ru.skubatko.dev.otus.java.hw20;
 
-import ru.skubatko.dev.otus.java.hw20.config.HomeWorkDataSource;
-import ru.skubatko.dev.otus.java.hw20.jdbc.DbExecutorImpl;
-import ru.skubatko.dev.otus.java.hw20.jdbc.mapper.EntityClassMetaData;
-import ru.skubatko.dev.otus.java.hw20.jdbc.mapper.EntityClassMetaDataImpl;
-import ru.skubatko.dev.otus.java.hw20.jdbc.mapper.EntitySQLMetaData;
-import ru.skubatko.dev.otus.java.hw20.jdbc.mapper.EntitySQLMetaDataImpl;
-import ru.skubatko.dev.otus.java.hw20.jdbc.mapper.JdbcMapper;
-import ru.skubatko.dev.otus.java.hw20.jdbc.mapper.JdbcMapperImpl;
-import ru.skubatko.dev.otus.java.hw20.jdbc.sessionmanager.SessionManagerJdbc;
+import ru.skubatko.dev.otus.java.hw20.dao.AccountDao;
+import ru.skubatko.dev.otus.java.hw20.dao.ClientDao;
+import ru.skubatko.dev.otus.java.hw20.dao.Dao;
+import ru.skubatko.dev.otus.java.hw20.flyway.MigrationsExecutorFlyway;
+import ru.skubatko.dev.otus.java.hw20.hibernate.HibernateUtils;
+import ru.skubatko.dev.otus.java.hw20.hibernate.sessionmanager.SessionManagerHibernate;
 import ru.skubatko.dev.otus.java.hw20.model.Account;
 import ru.skubatko.dev.otus.java.hw20.model.Client;
-import ru.skubatko.dev.otus.java.hw20.service.DbServiceAccountImpl;
-import ru.skubatko.dev.otus.java.hw20.service.DbServiceClientImpl;
+import ru.skubatko.dev.otus.java.hw20.service.AccountDbService;
+import ru.skubatko.dev.otus.java.hw20.service.ClientDbService;
+import ru.skubatko.dev.otus.java.hw20.service.DBService;
 
-import org.flywaydb.core.Flyway;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
 import java.util.Optional;
 import java.util.UUID;
 
 public class HomeWork {
 
+    private static final String HIBERNATE_CFG_FILE = "hibernate.cfg.xml";
+
     private static final Logger log = LoggerFactory.getLogger(HomeWork.class);
 
     public static void main(String[] args) {
 // Общая часть
-        var dataSource = new HomeWorkDataSource();
-        flywayMigrations(dataSource);
-        var sessionManager = new SessionManagerJdbc(dataSource);
+        Configuration configuration = new Configuration().configure(HIBERNATE_CFG_FILE);
+
+        String dbUrl = configuration.getProperty("hibernate.connection.url");
+        String dbUserName = configuration.getProperty("hibernate.connection.username");
+        String dbPassword = configuration.getProperty("hibernate.connection.password");
+
+        new MigrationsExecutorFlyway(dbUrl, dbUserName, dbPassword).executeMigrations();
+
+        SessionFactory sessionFactory = HibernateUtils.buildSessionFactory(configuration, Client.class, Account.class);
+        SessionManagerHibernate sessionManager = new SessionManagerHibernate(sessionFactory);
+
+        Dao<Client, Long> clientDao = new ClientDao(sessionManager);
+        DBService<Client, Long> dbServiceClient = new ClientDbService(clientDao);
 
 // Работа с клиентами
-        DbExecutorImpl<Client> dbClientExecutor = new DbExecutorImpl<>();
-        EntitySQLMetaData clientSQLMetaData = new EntitySQLMetaDataImpl(Client.class);
-        EntityClassMetaData<Client> clientClassMetaData = new EntityClassMetaDataImpl<>(Client.class);
-        JdbcMapper<Client> clientDao = new JdbcMapperImpl<>(sessionManager, dbClientExecutor, clientSQLMetaData, clientClassMetaData);
+        var clientId = dbServiceClient.save(new Client("dbServiceClient", 17));
 
-// Код дальше должен остаться, т.е. clientDao должен использоваться
-        var dbServiceClient = new DbServiceClientImpl(clientDao, sessionManager);
-
-        var clientId = dbServiceClient.saveEntity(new Client(0, "dbServiceClient", 17));
-
-        Optional<Client> clientOptional = dbServiceClient.getEntityById(clientId);
+        Optional<Client> clientOptional = dbServiceClient.getById(clientId);
         clientOptional.ifPresentOrElse(
                 client -> log.info("created client, name:{}", client.getName()),
                 () -> log.info("client was not created")
         );
 
-        dbServiceClient.saveEntity(new Client(clientId, "dbServiceClientUpdated", 25));
+        Client persisted = clientOptional.orElseThrow();
+        persisted.setAge(25);
+        dbServiceClient.save(persisted);
 
-        clientOptional = dbServiceClient.getEntityById(clientId);
+        clientOptional = dbServiceClient.getById(clientId);
         clientOptional.ifPresentOrElse(
                 client -> log.info("updated client, name:{}", client.getName()),
                 () -> log.info("client was not updated")
         );
 
 // Работа со счетом
-        DbExecutorImpl<Account> dbAccountExecutor = new DbExecutorImpl<>();
-        EntitySQLMetaData accountSQLMetaData = new EntitySQLMetaDataImpl(Account.class);
-        EntityClassMetaData<Account> accountClassMetaData = new EntityClassMetaDataImpl<>(Account.class);
-        JdbcMapper<Account> accountDao = new JdbcMapperImpl<>(sessionManager, dbAccountExecutor, accountSQLMetaData, accountClassMetaData);
-
-        var dbServiceAccount = new DbServiceAccountImpl(accountDao, sessionManager);
+        Dao<Account, String> accountDao = new AccountDao(sessionManager);
+        var dbServiceAccount = new AccountDbService(accountDao);
 
         String accountId = UUID.randomUUID().toString();
 
-        dbServiceAccount.saveEntity(new Account(accountId, "dbServiceAccountType", 17.78));
+        dbServiceAccount.save(new Account(accountId, "dbServiceAccountType", 17.78));
 
-        Optional<Account> accountOptional = dbServiceAccount.getEntityById(accountId);
+        Optional<Account> accountOptional = dbServiceAccount.getById(accountId);
         accountOptional.ifPresentOrElse(
                 account -> log.info("created account, type:{}", account.getType()),
                 () -> log.info("account was not created")
         );
 
-        dbServiceAccount.saveEntity(new Account(accountId, "dbServiceAccountTypeUpdated", 12.39));
+        dbServiceAccount.save(new Account(accountId, "dbServiceAccountTypeUpdated", 12.39));
 
-        accountOptional = dbServiceAccount.getEntityById(accountId);
+        accountOptional = dbServiceAccount.getById(accountId);
         accountOptional.ifPresentOrElse(
                 account -> log.info("updated account, type:{}", account.getType()),
                 () -> log.info("account was not updated")
         );
-    }
-
-    private static void flywayMigrations(DataSource dataSource) {
-        log.info("db migration started...");
-        var flyway = Flyway.configure()
-                             .dataSource(dataSource)
-                             .locations("classpath:/db/migration")
-                             .load();
-        flyway.migrate();
-        log.info("db migration finished.");
-        log.info("***");
     }
 }

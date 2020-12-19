@@ -6,12 +6,14 @@ group 'ru.skubatko.dev.otus.java'
 version '0.0.1'
 
 dependencies {
+    implementation("org.hibernate:hibernate-core")
+
     implementation 'ch.qos.logback:logback-classic'
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.postgresql:postgresql'
 
     // Tests
-    implementation 'org.assertj:assertj-core:3.6.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+    implementation 'org.assertj:assertj-core'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }

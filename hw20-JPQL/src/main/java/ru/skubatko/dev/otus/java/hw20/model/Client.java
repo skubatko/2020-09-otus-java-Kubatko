@@ -1,30 +1,58 @@
 package ru.skubatko.dev.otus.java.hw20.model;
 
-import ru.skubatko.dev.otus.java.hw20.annotaion.Id;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-public class Client {
+@Entity
+@Table(name = "client")
+public class Client implements Unique<Long>{
 
     @Id
-    private final long id;
-    private final String name;
-    private final int age;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
-    public Client(long id, String name, int age) {
-        this.id = id;
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "age")
+    private int age;
+
+    public Client() {
+    }
+
+    public Client(String name, int age) {
         this.name = name;
         this.age = age;
     }
 
-    public long getId() {
+    @Override
+    public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public int getAge() {
         return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 
     @Override
