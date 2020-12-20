@@ -15,7 +15,7 @@ public abstract class AbstractDbService<T extends Unique<K>, K> implements DBSer
 
     private static final Logger log = LoggerFactory.getLogger(AbstractDbService.class);
 
-    public AbstractDbService(Dao<T, K> dao) {
+    protected AbstractDbService(Dao<T, K> dao) {
         this.dao = dao;
     }
 

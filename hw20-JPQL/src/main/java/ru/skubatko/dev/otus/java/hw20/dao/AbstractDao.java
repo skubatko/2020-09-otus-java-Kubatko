@@ -6,16 +6,12 @@ import ru.skubatko.dev.otus.java.hw20.model.Unique;
 import ru.skubatko.dev.otus.java.hw20.sessionmanager.SessionManager;
 
 import org.hibernate.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class AbstractDao<T extends Unique<K>, K> implements Dao<T, K> {
 
     protected final SessionManagerHibernate sessionManager;
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractDao.class);
-
-    public AbstractDao(SessionManagerHibernate sessionManager) {
+    protected AbstractDao(SessionManagerHibernate sessionManager) {
         this.sessionManager = sessionManager;
     }
 
