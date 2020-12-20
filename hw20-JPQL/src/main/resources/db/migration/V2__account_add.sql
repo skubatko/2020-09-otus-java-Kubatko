@@ -1,6 +1,6 @@
 create table account
 (
-    id   varchar(36),
-    type varchar(50),
+    id   varchar(255),
+    type varchar(255),
     rest double precision
 );

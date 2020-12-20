@@ -7,7 +7,9 @@ import ru.skubatko.dev.otus.java.hw20.flyway.MigrationsExecutorFlyway;
 import ru.skubatko.dev.otus.java.hw20.hibernate.HibernateUtils;
 import ru.skubatko.dev.otus.java.hw20.hibernate.sessionmanager.SessionManagerHibernate;
 import ru.skubatko.dev.otus.java.hw20.model.Account;
+import ru.skubatko.dev.otus.java.hw20.model.AddressDataSet;
 import ru.skubatko.dev.otus.java.hw20.model.Client;
+import ru.skubatko.dev.otus.java.hw20.model.PhoneDataSet;
 import ru.skubatko.dev.otus.java.hw20.service.AccountDbService;
 import ru.skubatko.dev.otus.java.hw20.service.ClientDbService;
 import ru.skubatko.dev.otus.java.hw20.service.DBService;
@@ -36,7 +38,8 @@ public class HomeWork {
 
         new MigrationsExecutorFlyway(dbUrl, dbUserName, dbPassword).executeMigrations();
 
-        SessionFactory sessionFactory = HibernateUtils.buildSessionFactory(configuration, Client.class, Account.class);
+        SessionFactory sessionFactory = HibernateUtils.buildSessionFactory(configuration,
+                Client.class, Account.class, AddressDataSet.class, PhoneDataSet.class);
         SessionManagerHibernate sessionManager = new SessionManagerHibernate(sessionFactory);
 
         Dao<Client, Long> clientDao = new ClientDao(sessionManager);

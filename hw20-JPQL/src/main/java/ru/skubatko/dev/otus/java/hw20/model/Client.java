@@ -1,15 +1,22 @@
 package ru.skubatko.dev.otus.java.hw20.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "client")
-public class Client implements Unique<Long>{
+public class Client implements Unique<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +28,13 @@ public class Client implements Unique<Long>{
 
     @Column(name = "age")
     private int age;
+
+    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private AddressDataSet address;
+
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<PhoneDataSet> phones = new ArrayList<>();
 
     public Client() {
     }
@@ -53,6 +67,22 @@ public class Client implements Unique<Long>{
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public AddressDataSet getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressDataSet address) {
+        this.address = address;
+    }
+
+    public List<PhoneDataSet> getPhones() {
+        return phones;
+    }
+
+    public void setPhones(List<PhoneDataSet> phones) {
+        this.phones = phones;
     }
 
     @Override
