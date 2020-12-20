@@ -2,11 +2,11 @@ package ru.skubatko.dev.otus.java.hw20.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -22,16 +22,16 @@ public class AddressDataSet implements Unique<Long> {
     @Column(name = "street")
     private String street;
 
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "client_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id", referencedColumnName = "id")
     private Client client;
 
     public AddressDataSet() {
     }
 
-    public AddressDataSet(String street) {
+    public AddressDataSet(String street, Client client) {
         this.street = street;
+        this.client = client;
     }
 
     @Override

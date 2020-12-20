@@ -19,6 +19,7 @@ import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -61,6 +62,26 @@ public class HomeWork {
         clientOptional = dbServiceClient.getById(clientId);
         clientOptional.ifPresentOrElse(
                 client -> log.info("updated client, name:{}", client.getName()),
+                () -> log.info("client was not updated")
+        );
+
+        AddressDataSet address = new AddressDataSet("street", persisted);
+        persisted.setAddress(address);
+
+        List<PhoneDataSet> phones = List.of(new PhoneDataSet("phone1", persisted), new PhoneDataSet("phone2", persisted));
+        persisted.setPhones(phones);
+
+        dbServiceClient.save(persisted);
+
+        clientOptional = dbServiceClient.getById(clientId);
+        clientOptional.ifPresentOrElse(
+                client -> log.info("updated client, address:{}", client.getAddress()),
+                () -> log.info("client was not updated")
+        );
+
+        clientOptional = dbServiceClient.getById(clientId);
+        clientOptional.ifPresentOrElse(
+                client -> log.info("updated client, phones:{}", client.getPhones()),
                 () -> log.info("client was not updated")
         );
 

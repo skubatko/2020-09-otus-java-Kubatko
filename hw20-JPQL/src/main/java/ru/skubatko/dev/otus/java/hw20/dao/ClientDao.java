@@ -4,6 +4,7 @@ import ru.skubatko.dev.otus.java.hw20.hibernate.sessionmanager.DatabaseSessionHi
 import ru.skubatko.dev.otus.java.hw20.hibernate.sessionmanager.SessionManagerHibernate;
 import ru.skubatko.dev.otus.java.hw20.model.Client;
 
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +22,12 @@ public class ClientDao extends AbstractDao<Client, Long> {
     public Optional<Client> findById(Long id) {
         DatabaseSessionHibernate currentSession = sessionManager.getCurrentSession();
         try {
-            return Optional.ofNullable(currentSession.getHibernateSession().find(Client.class, id));
+            Client client = currentSession.getHibernateSession().get(Client.class, id);
+            if (client != null) {
+                Hibernate.initialize(client.getPhones());
+            }
+
+            return Optional.ofNullable(client);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

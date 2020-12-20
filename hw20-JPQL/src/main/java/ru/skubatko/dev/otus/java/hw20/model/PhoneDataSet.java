@@ -28,8 +28,9 @@ public class PhoneDataSet implements Unique<Long> {
     public PhoneDataSet() {
     }
 
-    public PhoneDataSet(String number) {
+    public PhoneDataSet(String number, Client client) {
         this.number = number;
+        this.client = client;
     }
 
     @Override
@@ -59,9 +60,9 @@ public class PhoneDataSet implements Unique<Long> {
 
     @Override
     public String toString() {
-        return "AddressDataSet{" +
+        return "PhoneDataSet{" +
                        "id=" + id +
-                       ", street='" + number + '\'' +
+                       ", number='" + number + '\'' +
                        '}';
     }
 }
