@@ -1,5 +1,8 @@
 package ru.skubatko.dev.otus.java.hw21;
 
+import ru.skubatko.dev.otus.java.hw21.cachehw.HwCache;
+import ru.skubatko.dev.otus.java.hw21.cachehw.HwListener;
+import ru.skubatko.dev.otus.java.hw21.cachehw.MyCache;
 import ru.skubatko.dev.otus.java.hw21.dao.AccountDao;
 import ru.skubatko.dev.otus.java.hw21.dao.ClientDao;
 import ru.skubatko.dev.otus.java.hw21.dao.Dao;
@@ -30,6 +33,7 @@ public class HomeWork {
     private static final Logger log = LoggerFactory.getLogger(HomeWork.class);
 
     public static void main(String[] args) {
+
 // Общая часть
         Configuration configuration = new Configuration().configure(HIBERNATE_CFG_FILE);
 
@@ -43,10 +47,20 @@ public class HomeWork {
                 Client.class, Account.class, AddressDataSet.class, PhoneDataSet.class);
         SessionManagerHibernate sessionManager = new SessionManagerHibernate(sessionFactory);
 
-        Dao<Client, Long> clientDao = new ClientDao(sessionManager);
-        DBService<Client, Long> dbServiceClient = new ClientDbService(clientDao);
-
 // Работа с клиентами
+        Dao<Client, Long> clientDao = new ClientDao(sessionManager);
+
+        HwCache<Long, Client> clientCache = new MyCache<>();
+        HwListener<Long, Client> clientListener = new HwListener<Long, Client>() {
+            @Override
+            public void notify(Long key, Client value, String action) {
+                log.info("notify() - info: action = {} for key = {}, value = {}", action, key, value);
+            }
+        };
+        clientCache.addListener(clientListener);
+
+        DBService<Client, Long> dbServiceClient = new ClientDbService(clientDao, clientCache);
+
         var clientId = dbServiceClient.save(new Client("dbServiceClient", 17));
 
         Optional<Client> clientOptional = dbServiceClient.getById(clientId);
@@ -87,7 +101,17 @@ public class HomeWork {
 
 // Работа со счетом
         Dao<Account, String> accountDao = new AccountDao(sessionManager);
-        var dbServiceAccount = new AccountDbService(accountDao);
+
+        HwCache<String, Account> accountCache = new MyCache<>();
+        HwListener<String, Account> accountListener = new HwListener<String, Account>() {
+            @Override
+            public void notify(String key, Account value, String action) {
+                log.info("notify() - info: action = {} for key = {}, value = {}", action, key, value);
+            }
+        };
+        accountCache.addListener(accountListener);
+
+        var dbServiceAccount = new AccountDbService(accountDao, accountCache);
 
         String accountId = UUID.randomUUID().toString();
 
