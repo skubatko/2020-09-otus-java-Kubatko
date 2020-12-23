@@ -10,9 +10,8 @@ import ru.skubatko.dev.otus.java.hw20.model.Account;
 import ru.skubatko.dev.otus.java.hw20.model.AddressDataSet;
 import ru.skubatko.dev.otus.java.hw20.model.Client;
 import ru.skubatko.dev.otus.java.hw20.model.PhoneDataSet;
-import ru.skubatko.dev.otus.java.hw20.service.AccountDbService;
-import ru.skubatko.dev.otus.java.hw20.service.ClientDbService;
 import ru.skubatko.dev.otus.java.hw20.service.DBService;
+import ru.skubatko.dev.otus.java.hw20.service.DbServiceImpl;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -44,16 +43,33 @@ public class HomeWork {
         SessionManagerHibernate sessionManager = new SessionManagerHibernate(sessionFactory);
 
         Dao<Client, Long> clientDao = new ClientDao(sessionManager);
-        DBService<Client, Long> dbServiceClient = new ClientDbService(clientDao);
+        DBService<Client, Long> dbServiceClient = new DbServiceImpl<>(clientDao);
 
 // Работа с клиентами
-        var clientId = dbServiceClient.save(new Client("dbServiceClient", 17));
+        var aClient = new Client("dbServiceClient", 17);
+        aClient.setAddress(new AddressDataSet("dbServiceClientAddress", aClient));
+        var p1 = new PhoneDataSet();
+        p1.setNumber("1111");
+        p1.setClient(aClient);
+        var p2 = new PhoneDataSet();
+        p2.setNumber("222");
+        p2.setClient(aClient);
+        aClient.setPhones(List.of(p1, p2));
+
+        var clientId = dbServiceClient.save(aClient);
 
         Optional<Client> clientOptional = dbServiceClient.getById(clientId);
         clientOptional.ifPresentOrElse(
                 client -> log.info("created client, name:{}", client.getName()),
                 () -> log.info("client was not created")
         );
+
+        clientOptional.map(Client::getAddress).ifPresentOrElse(
+                address -> log.info("created client address:{}", address),
+                () -> log.info("address was not created")
+        );
+
+        clientOptional.map(Client::getPhones).ifPresent(phones -> log.info("created client phones:{}", phones));
 
         Client persisted = clientOptional.orElseThrow();
         persisted.setAge(25);
@@ -65,29 +81,23 @@ public class HomeWork {
                 () -> log.info("client was not updated")
         );
 
-        AddressDataSet address = new AddressDataSet("street", persisted);
-        persisted.setAddress(address);
+        AddressDataSet anAddress = new AddressDataSet("street", persisted);
+        persisted.setAddress(anAddress);
 
-        List<PhoneDataSet> phones = List.of(new PhoneDataSet("phone1", persisted), new PhoneDataSet("phone2", persisted));
-        persisted.setPhones(phones);
+        List<PhoneDataSet> phoneList = List.of(new PhoneDataSet("phone1", persisted), new PhoneDataSet("phone2", persisted));
+        persisted.setPhones(phoneList);
 
         dbServiceClient.save(persisted);
 
         clientOptional = dbServiceClient.getById(clientId);
-        clientOptional.ifPresentOrElse(
-                client -> log.info("updated client, address:{}", client.getAddress()),
-                () -> log.info("client was not updated")
-        );
 
-        clientOptional = dbServiceClient.getById(clientId);
-        clientOptional.ifPresentOrElse(
-                client -> log.info("updated client, phones:{}", client.getPhones()),
-                () -> log.info("client was not updated")
-        );
+        clientOptional.map(Client::getAddress).ifPresent(address -> log.info("updated client address:{}", address));
+
+        clientOptional.map(Client::getPhones).ifPresent(phones -> log.info("updated client phones:{}", phones));
 
 // Работа со счетом
         Dao<Account, String> accountDao = new AccountDao(sessionManager);
-        var dbServiceAccount = new AccountDbService(accountDao);
+        var dbServiceAccount = new DbServiceImpl<>(accountDao);
 
         String accountId = UUID.randomUUID().toString();
 

@@ -9,13 +9,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
-public abstract class AbstractDbService<T extends Unique<K>, K> implements DBService<T, K> {
+public class DbServiceImpl<T extends Unique<K>, K> implements DBService<T, K> {
 
     private final Dao<T, K> dao;
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractDbService.class);
+    private static final Logger log = LoggerFactory.getLogger(DbServiceImpl.class);
 
-    protected AbstractDbService(Dao<T, K> dao) {
+    public DbServiceImpl(Dao<T, K> dao) {
         this.dao = dao;
     }
 
