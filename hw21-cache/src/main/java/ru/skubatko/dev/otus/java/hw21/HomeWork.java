@@ -13,9 +13,8 @@ import ru.skubatko.dev.otus.java.hw21.model.Account;
 import ru.skubatko.dev.otus.java.hw21.model.AddressDataSet;
 import ru.skubatko.dev.otus.java.hw21.model.Client;
 import ru.skubatko.dev.otus.java.hw21.model.PhoneDataSet;
-import ru.skubatko.dev.otus.java.hw21.service.AccountDbService;
-import ru.skubatko.dev.otus.java.hw21.service.ClientDbService;
 import ru.skubatko.dev.otus.java.hw21.service.DBService;
+import ru.skubatko.dev.otus.java.hw21.service.DbServiceImpl;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -59,7 +58,7 @@ public class HomeWork {
         };
         clientCache.addListener(clientListener);
 
-        DBService<Client, Long> dbServiceClient = new ClientDbService(clientDao, clientCache);
+        DBService<Client, Long> dbServiceClient = new DbServiceImpl<>(clientDao, clientCache);
 
         var clientId = dbServiceClient.save(new Client("dbServiceClient", 17));
 
@@ -111,7 +110,7 @@ public class HomeWork {
         };
         accountCache.addListener(accountListener);
 
-        var dbServiceAccount = new AccountDbService(accountDao, accountCache);
+        var dbServiceAccount = new DbServiceImpl<>(accountDao, accountCache);
 
         String accountId = UUID.randomUUID().toString();
 

@@ -10,14 +10,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
-public abstract class AbstractDbService<T extends Unique<K>, K> implements DBService<T, K> {
+public class DbServiceImpl<T extends Unique<K>, K> implements DBService<T, K> {
 
     private final Dao<T, K> dao;
     private final HwCache<K, T> cache;
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractDbService.class);
+    private static final Logger log = LoggerFactory.getLogger(DbServiceImpl.class);
 
-    protected AbstractDbService(Dao<T, K> dao, HwCache<K, T> cache) {
+    public DbServiceImpl(Dao<T, K> dao, HwCache<K, T> cache) {
         this.dao = dao;
         this.cache = cache;
     }
@@ -53,10 +53,11 @@ public abstract class AbstractDbService<T extends Unique<K>, K> implements DBSer
         try (SessionManager sessionManager = dao.getSessionManager()) {
             sessionManager.beginSession();
             try {
-                Optional<T> entity = dao.findById(id);
+                Optional<T> optionalEntity = dao.findById(id);
+                optionalEntity.ifPresent(entity -> cache.put(id, entity));
 
-                log.info("entity: {}", entity.orElse(null));
-                return entity;
+                log.info("entity: {}", optionalEntity.orElse(null));
+                return optionalEntity;
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 sessionManager.rollbackSession();

@@ -1,10 +1,12 @@
 package ru.skubatko.dev.otus.java.hw21.cachehw;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.WeakHashMap;
 
 /**
@@ -16,28 +18,43 @@ public class MyCache<K, V> implements HwCache<K, V> {
     private final Map<K, V> cache = new WeakHashMap<>();
     private final List<WeakReference<HwListener<K, V>>> listeners = new ArrayList<>();
 
+    private static final Logger log = LoggerFactory.getLogger(MyCache.class);
+
 //Надо реализовать эти методы
 
     @Override
     public void put(K key, V value) {
         cache.put(key, value);
-        listeners.forEach(reference -> Optional.ofNullable(reference.get())
-                                               .ifPresent(listener -> listener.notify(key, value, "put")));
+        notifyListeners(key, value, "put");
     }
 
     @Override
     public void remove(K key) {
         V removed = cache.remove(key);
-        listeners.forEach(reference -> Optional.ofNullable(reference.get())
-                                               .ifPresent(listener -> listener.notify(key, removed, "remove")));
+        notifyListeners(key, removed, "remove");
     }
 
     @Override
     public V get(K key) {
         V value = cache.get(key);
-        listeners.forEach(reference -> Optional.ofNullable(reference.get())
-                                               .ifPresent(listener -> listener.notify(key, value, "get")));
+        notifyListeners(key, value, "get");
         return value;
+    }
+
+    private void notifyListeners(K key, V value, String action) {
+        for (WeakReference<HwListener<K, V>> reference : listeners) {
+            HwListener<K, V> listener = reference.get();
+            if (listener == null) {
+                listeners.remove(reference);
+                continue;
+            }
+
+            try {
+                listener.notify(key, value, action);
+            } catch (Exception e) {
+                log.warn("notify failed", e);
+            }
+        }
     }
 
     @Override
