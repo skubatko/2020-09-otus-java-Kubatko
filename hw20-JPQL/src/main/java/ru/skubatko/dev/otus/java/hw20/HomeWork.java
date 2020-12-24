@@ -11,6 +11,7 @@ import ru.skubatko.dev.otus.java.hw20.model.AddressDataSet;
 import ru.skubatko.dev.otus.java.hw20.model.Client;
 import ru.skubatko.dev.otus.java.hw20.model.PhoneDataSet;
 import ru.skubatko.dev.otus.java.hw20.service.DBService;
+import ru.skubatko.dev.otus.java.hw20.service.DbServiceClientImpl;
 import ru.skubatko.dev.otus.java.hw20.service.DbServiceImpl;
 
 import org.hibernate.SessionFactory;
@@ -42,18 +43,16 @@ public class HomeWork {
                 Client.class, Account.class, AddressDataSet.class, PhoneDataSet.class);
         SessionManagerHibernate sessionManager = new SessionManagerHibernate(sessionFactory);
 
-        Dao<Client, Long> clientDao = new ClientDao(sessionManager);
-        DBService<Client, Long> dbServiceClient = new DbServiceImpl<>(clientDao);
-
 // Работа с клиентами
+        Dao<Client, Long> clientDao = new ClientDao(sessionManager);
+        DBService<Client, Long> dbServiceClient = new DbServiceClientImpl(clientDao);
+
         var aClient = new Client("dbServiceClient", 17);
         aClient.setAddress(new AddressDataSet("dbServiceClientAddress", aClient));
         var p1 = new PhoneDataSet();
         p1.setNumber("1111");
-        p1.setClient(aClient);
         var p2 = new PhoneDataSet();
         p2.setNumber("222");
-        p2.setClient(aClient);
         aClient.setPhones(List.of(p1, p2));
 
         var clientId = dbServiceClient.save(aClient);
@@ -77,23 +76,9 @@ public class HomeWork {
 
         clientOptional = dbServiceClient.getById(clientId);
         clientOptional.ifPresentOrElse(
-                client -> log.info("updated client, name:{}", client.getName()),
+                client -> log.info("updated client: name:{}, age:{}", client.getName(), client.getAge()),
                 () -> log.info("client was not updated")
         );
-
-        AddressDataSet anAddress = new AddressDataSet("street", persisted);
-        persisted.setAddress(anAddress);
-
-        List<PhoneDataSet> phoneList = List.of(new PhoneDataSet("phone1", persisted), new PhoneDataSet("phone2", persisted));
-        persisted.setPhones(phoneList);
-
-        dbServiceClient.save(persisted);
-
-        clientOptional = dbServiceClient.getById(clientId);
-
-        clientOptional.map(Client::getAddress).ifPresent(address -> log.info("updated client address:{}", address));
-
-        clientOptional.map(Client::getPhones).ifPresent(phones -> log.info("updated client phones:{}", phones));
 
 // Работа со счетом
         Dao<Account, String> accountDao = new AccountDao(sessionManager);
