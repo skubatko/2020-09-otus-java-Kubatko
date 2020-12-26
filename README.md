@@ -32,5 +32,7 @@ https://otus.ru/lessons/java-professional
 * hw18-jdbc - Домашнее задание к уроку 18
 JDBC
 
+* hw20-JPQL - Домашнее задание к уроку 20
+
 * hw21-cache - Домашнее задание к уроку 21
 Типы ссылок. Кэширование.
