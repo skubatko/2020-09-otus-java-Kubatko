@@ -26,6 +26,7 @@ allprojects {
     group "ru.skubatko.dev.otus.java"
 
     repositories {
+        mavenLocal()
         jcenter()
     }
 
