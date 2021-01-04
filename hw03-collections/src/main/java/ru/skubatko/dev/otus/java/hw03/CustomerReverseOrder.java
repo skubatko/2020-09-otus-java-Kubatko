@@ -1,20 +1,19 @@
 package ru.skubatko.dev.otus.java.hw03;
 
-import java.util.Comparator;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public final class CustomerReverseOrder {
 
     //todo: 2. надо реализовать методы этого класса
 
-    Queue<Customer> pq = new PriorityQueue<>(Comparator.comparingLong(Customer::getId).reversed());
+    Deque<Customer> stack = new ArrayDeque<>();
 
     public void add(Customer customer) {
-        pq.add(customer);
+        stack.push(customer);
     }
 
     public Customer take() {
-        return pq.remove();
+        return stack.pop();
     }
 }
