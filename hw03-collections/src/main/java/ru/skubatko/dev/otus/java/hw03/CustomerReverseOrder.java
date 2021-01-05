@@ -7,7 +7,7 @@ public final class CustomerReverseOrder {
 
     //todo: 2. надо реализовать методы этого класса
 
-    Deque<Customer> stack = new ArrayDeque<>();
+    private final Deque<Customer> stack = new ArrayDeque<>();
 
     public void add(Customer customer) {
         stack.push(customer);
