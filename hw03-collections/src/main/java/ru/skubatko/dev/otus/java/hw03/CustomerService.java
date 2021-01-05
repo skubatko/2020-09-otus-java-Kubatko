@@ -1,11 +1,8 @@
 package ru.skubatko.dev.otus.java.hw03;
 
-import java.util.AbstractMap;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.NavigableMap;
-import java.util.Objects;
 import java.util.TreeMap;
 
 public final class CustomerService {
@@ -16,50 +13,45 @@ public final class CustomerService {
             new TreeMap<>(Comparator.comparingLong(Customer::getScores));
 
     public Map.Entry<Customer, String> getSmallest() {
-        return getNextImmutableEntry(getIterator());
+        return getEntryOrNull(customers.firstEntry());
     }
 
     public Map.Entry<Customer, String> getNext(Customer customer) {
-        boolean exists = customers.containsKey(customer);
-        if (!exists) {
-            customers.put(customer, "getNext");
-        }
-
-        Iterator<Map.Entry<Customer, String>> iterator = getIterator();
-        while (iterator.hasNext()) {
-            Map.Entry<Customer, String> entry = iterator.next();
-            if (Objects.equals(entry.getKey(), customer)) {
-                AbstractMap.SimpleEntry<Customer, String> result = getNextImmutableEntry(iterator);
-
-                if (!exists) {
-                    customers.remove(customer);
-                }
-
-                return result;
-            }
-        }
-
-        return null;
+        return getEntryOrNull(customers.higherEntry(customer));
     }
 
-    private Iterator<Map.Entry<Customer, String>> getIterator() {
-        return customers.entrySet().iterator();
-    }
-
-    private AbstractMap.SimpleEntry<Customer, String> getNextImmutableEntry(
-            Iterator<Map.Entry<Customer, String>> iterator) {
-        if (!iterator.hasNext()) {
-            return null;
-        }
-
-        Map.Entry<Customer, String> entry = iterator.next();
-        Customer key = entry.getKey();
-        return new AbstractMap.SimpleEntry<>(
-                new Customer(key.getId(), key.getName(), key.getScores()),
-                entry.getValue());
+    private Map.Entry<Customer, String> getEntryOrNull(Map.Entry<Customer, String> entry) {
+        return entry == null ? null : new CustomerEntry(entry.getKey(), entry.getValue());
     }
 
     public void add(Customer customer, String data) {
         customers.put(customer, data);
+    }
+
+    private static class CustomerEntry implements Map.Entry<Customer, String> {
+
+        private final Customer key;
+        private String value;
+
+        public CustomerEntry(Customer key, String value) {
+            this.key = Customer.copyOf(key);
+            this.value = value;
+        }
+
+        @Override
+        public Customer getKey() {
+            return key;
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String setValue(String value) {
+            this.value = value;
+            return value;
+        }
     }
 }

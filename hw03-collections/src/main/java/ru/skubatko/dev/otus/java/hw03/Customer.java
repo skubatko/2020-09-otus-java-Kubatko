@@ -34,6 +34,10 @@ public final class Customer {
         this.scores = scores;
     }
 
+    public static Customer copyOf(Customer customer) {
+        return new Customer(customer.getId(), customer.getName(), customer.getScores());
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
