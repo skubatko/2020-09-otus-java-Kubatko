@@ -29,6 +29,7 @@
 
 ### G1
 time:280 sec    
+number of iteration completed:1000
 number of [G1 Young Generation] is [4265]   
 number of [G1 Old Generation] is [27]   
 number of [G1 Young Generation] per minute is [913]  
@@ -36,6 +37,7 @@ number of [G1 Old Generation] per minute is [5]
 
 ### Serial Collector
 time:258 sec    
+number of iteration completed:1000
 number of [Copy] is [1999]  // minor GC  
 number of [MarkSweepCompact] is [999]   // major GC     
 number of [Copy] per minute is [464]    // minor GC   
@@ -43,6 +45,7 @@ number of [MarkSweepCompact] per minute is [232]    // major GC
 
 ### Parallel Collector
 time:495 sec    
+number of iteration completed:1000
 number of [PS MarkSweep] is [1001]  // major GC     
 number of [PS Scavenge] is [3994]   // minor GC     
 number of [PS MarkSweep] per minute is [121]  // major GC    
@@ -50,6 +53,7 @@ number of [PS Scavenge] per minute is [484]   // minor GC
 
 ### CMS
 time:649 sec    
+number of iteration completed:1000
 number of [ParNew] is [1999]    // minor GC     
 number of [ConcurrentMarkSweep] is [1980]   // major GC     
 number of [ParNew] per minute is [184]    // minor GC   
@@ -57,6 +61,7 @@ number of [ConcurrentMarkSweep] per minute is [183] // major GC
 
 ### ZGC
 time:162 sec
+number of iteration completed:1000
 number of [ZGC] is [1292]   // major GC     
 number of [ZGC] per minute is [478] // major GC     
 
@@ -72,6 +77,8 @@ number of [ZGC] per minute is [478] // major GC
 * CMS худший по производительности нашего приложения
 * ZGC показал лучший результат по производительности нашего приложения, при этом молодое поколение практически не очищалось, что плохо для приложений, где постоянно происходит создание новых объектов в массовом порядке
 
+Отмечу, что для объективности сравнения замеры произведены с учетом одинаковой "полезной работы" приложения.
+
 Таким образом, можно отметить, что для нашего приложения лучшим выбором будет G1 или Serial Collector.
 для Java 9+ по-умолчанию используется G1, имеет смысл его и оставить,
 так как он менее всего влияет на производительность приложения 280 сек против 495 сек Parallel Collector и 649 сек CMS,
@@ -79,4 +86,4 @@ number of [ZGC] per minute is [478] // major GC
 
 В целом, имеет смысл менять GC по-умолчанию только в том случае, когда серьезно не устраивает работа текущего. 
 Также нужно учитывать размер heap при выборе реализации GC. 
-И безусловно, сначала нужно определить какие цели преследуем, меняя GC.
+И, безусловно, сначала нужно определить какие цели преследуем, меняя GC.

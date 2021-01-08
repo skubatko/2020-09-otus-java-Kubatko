@@ -35,6 +35,7 @@ public class GcApp {
 
         long duration = (System.currentTimeMillis() - beginTime) / 1000;
         System.out.println("time:" + duration + " sec");
+        System.out.println("number of iteration completed:" + mbean.getNumberOfIterationCompleted());
 
         statistics.forEach((k, v) -> System.out.printf("number of [%s] is [%d]%n", k, v));
         statistics.forEach((k, v) -> System.out.printf("number of [%s] per minute is [%d]%n", k, v * 60 / duration));

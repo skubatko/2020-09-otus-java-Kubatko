@@ -1,12 +1,16 @@
 package ru.skubatko.dev.otus.java.hw08;
 
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 class Benchmark implements BenchmarkMBean {
     private final int loopCounter;
     private volatile int size = 0;
+    private final AtomicInteger numberOfIterationCompleted;
 
     public Benchmark(int loopCounter) {
         this.loopCounter = loopCounter;
+        numberOfIterationCompleted = new AtomicInteger(0);
     }
 
     void run() throws InterruptedException {
@@ -16,6 +20,7 @@ class Benchmark implements BenchmarkMBean {
             for (int i = 0; i < local; i++) {
                 array[i] = new String(new char[0]);
             }
+            numberOfIterationCompleted.incrementAndGet();
             Thread.sleep(10); //Label_1
         }
     }
@@ -29,5 +34,9 @@ class Benchmark implements BenchmarkMBean {
     public void setSize(int size) {
         System.out.println("new size:" + size);
         this.size = size;
+    }
+
+    public AtomicInteger getNumberOfIterationCompleted() {
+        return numberOfIterationCompleted;
     }
 }
