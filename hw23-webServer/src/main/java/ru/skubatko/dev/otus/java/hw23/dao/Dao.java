@@ -15,5 +15,7 @@ public interface Dao<T extends Unique<K>, K> {
 
     K insertOrUpdate(T entity);
 
+    void delete(T entity);
+
     SessionManager getSessionManager();
 }

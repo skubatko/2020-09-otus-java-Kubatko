@@ -97,4 +97,18 @@ public class UserServiceImpl implements UserService {
             return Collections.emptyList();
         }
     }
+
+    @Override
+    public void delete(User user) {
+        try (SessionManager sessionManager = dao.getSessionManager()) {
+            sessionManager.beginSession();
+            try {
+                dao.delete(user);
+                log.info("user deleted");
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                sessionManager.rollbackSession();
+            }
+        }
+    }
 }

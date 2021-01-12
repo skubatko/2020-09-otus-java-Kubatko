@@ -10,4 +10,6 @@ public interface UserService extends DBService<User, Long> {
     Optional<User> findByLogin(String login);
 
     List<User> findAll();
+
+    void delete(User user);
 }

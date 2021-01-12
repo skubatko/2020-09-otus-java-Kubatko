@@ -57,6 +57,17 @@ public abstract class AbstractDao<T extends Unique<K>, K> implements Dao<T, K> {
     }
 
     @Override
+    public void delete(T entity) {
+        DatabaseSessionHibernate currentSession = sessionManager.getCurrentSession();
+        try {
+            Session hibernateSession = currentSession.getHibernateSession();
+            hibernateSession.remove(entity);
+        } catch (Exception e) {
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
     public SessionManager getSessionManager() {
         return sessionManager;
     }

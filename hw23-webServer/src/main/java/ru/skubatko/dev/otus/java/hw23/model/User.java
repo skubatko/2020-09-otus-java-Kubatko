@@ -25,8 +25,10 @@ public class User implements Unique<Long> {
     @Column(name = "password")
     private String password;
 
-    public User(long id, String name, String login, String password) {
-        this.id = id;
+    public User() {
+    }
+
+    public User(String name, String login, String password) {
         this.name = name;
         this.login = login;
         this.password = password;
