@@ -38,17 +38,17 @@ public final class DbHelper {
     public static void populateDb(UserService userService) {
         log.info("populateDb() - start");
 
-        userService.findAll().forEach(userService::delete);
+        if (userService.findAll().isEmpty()) {
+            List<User> users = List.of(
+                    new User(1L, "user1", "login1", "pass1"),
+                    new User(2L, "user2", "login2", "pass2"),
+                    new User(3L, "user3", "login3", "pass3"),
+                    new User(4L, "user4", "login4", "pass4"),
+                    new User(5L, "user5", "login5", "pass5")
+            );
+            users.forEach(userService::save);
+        }
 
-        List<User> users = List.of(
-                new User("user1", "login1", "pass1"),
-                new User("user2", "login2", "pass2"),
-                new User("user3", "login3", "pass3"),
-                new User("user4", "login4", "pass4"),
-                new User("user5", "login5", "pass5")
-        );
-
-        users.forEach(userService::save);
         log.info("populateDb() - end");
     }
 }

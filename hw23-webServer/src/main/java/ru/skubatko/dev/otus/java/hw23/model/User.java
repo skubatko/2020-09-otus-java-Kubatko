@@ -28,7 +28,8 @@ public class User implements Unique<Long> {
     public User() {
     }
 
-    public User(String name, String login, String password) {
+    public User(Long id, String name, String login, String password) {
+        this.id = id;
         this.name = name;
         this.login = login;
         this.password = password;
