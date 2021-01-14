@@ -11,10 +11,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.PriorityQueue;
 
 public class AppComponentsContainerImpl implements AppComponentsContainer {
@@ -22,40 +22,37 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     private final List<Object> appComponents = new ArrayList<>();
     private final Map<String, Object> appComponentsByName = new HashMap<>();
     private final Map<Class<?>, String> beanNameByClass = new HashMap<>();
+    private final Map<Class<?>, Object> configClassInstanceByClass = new HashMap<>();
 
     private static final Logger log = LoggerFactory.getLogger(AppComponentsContainerImpl.class);
 
-    public AppComponentsContainerImpl(Class<?> initialConfigClass) {
-        processConfig(initialConfigClass);
+    public AppComponentsContainerImpl(Class<?>... configClasses) {
+        processConfig(configClasses);
     }
 
-    private void processConfig(Class<?> configClass) {
-        checkConfigClass(configClass);
+    private void processConfig(Class<?>... configClasses) {
+        checkConfigClasses(configClasses);
 
+        buildConfigClassInstances(configClasses);
 
-        PriorityQueue<AppBean> pq = new PriorityQueue<>();
-        for (Method method : configClass.getDeclaredMethods()) {
-            if (!(method.isAnnotationPresent(AppComponent.class))) {
-                continue;
-            }
+        buildAppComponentsContainer(configClasses);
+    }
 
-            AppComponent annotation = method.getDeclaredAnnotation(AppComponent.class);
-            pq.add(new AppBean(annotation.order(), annotation.name(), method));
-            beanNameByClass.put(method.getReturnType(), annotation.name());
-        }
-
-        Object configInstance = getConfigClassInstance(configClass);
-        while (!(pq.isEmpty())) {
-            AppBean bean = pq.poll();
-            Object beanInstance = getBeanInstance(bean, configInstance);
-            appComponents.add(beanInstance);
-            appComponentsByName.put(bean.name, beanInstance);
+    private void checkConfigClasses(Class<?>... configClasses) {
+        for (var configClass : configClasses) {
+            checkConfigClass(configClass);
         }
     }
 
     private void checkConfigClass(Class<?> configClass) {
         if (!configClass.isAnnotationPresent(AppComponentsContainerConfig.class)) {
             throw new IllegalArgumentException(String.format("Given class is not config %s", configClass.getName()));
+        }
+    }
+
+    private void buildConfigClassInstances(Class<?>... configClasses) {
+        for (var configClass : configClasses) {
+            configClassInstanceByClass.put(configClass, getConfigClassInstance(configClass));
         }
     }
 
@@ -68,10 +65,36 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         }
     }
 
-    private Object getBeanInstance(AppBean bean, Object configInstance) {
+    private void buildAppComponentsContainer(Class<?>... configClasses) {
+        var orderedBeans = getOrderedAppBeans(configClasses);
+        while (!(orderedBeans.isEmpty())) {
+            AppBean bean = orderedBeans.poll();
+            Object beanInstance = getBeanInstance(bean);
+            appComponents.add(beanInstance);
+            appComponentsByName.put(bean.name, beanInstance);
+        }
+    }
+
+    private PriorityQueue<AppBean> getOrderedAppBeans(Class<?>... configClasses) {
+        PriorityQueue<AppBean> orderedBeans = new PriorityQueue<>(Comparator.comparingInt(o -> o.order));
+        for (var configClass : configClasses) {
+            for (var method : configClass.getDeclaredMethods()) {
+                if (!(method.isAnnotationPresent(AppComponent.class))) {
+                    continue;
+                }
+
+                var annotation = method.getDeclaredAnnotation(AppComponent.class);
+                orderedBeans.add(new AppBean(annotation.order(), annotation.name(), method));
+                beanNameByClass.put(method.getReturnType(), annotation.name());
+            }
+        }
+        return orderedBeans;
+    }
+
+    private Object getBeanInstance(AppBean bean) {
         try {
-            Object[] beanArgs = getBeanArgs(bean);
-            return bean.method.invoke(configInstance, beanArgs);
+            var method = bean.method;
+            return method.invoke(configClassInstanceByClass.get(method.getDeclaringClass()), getBeanArgs(bean));
         } catch (Exception e) {
             log.error("cannot instantiate bean = {}", bean.name);
             throw new RuntimeException(e);
@@ -89,9 +112,9 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     @Override
     @SuppressWarnings("unchecked")
     public <C> C getAppComponent(Class<C> componentClass) {
-        String beanName = beanNameByClass.get(componentClass);
+        var beanName = beanNameByClass.get(componentClass);
         if (beanName == null) {
-            Optional<Class<?>> componentInterface =
+            var componentInterface =
                     Arrays.stream(componentClass.getInterfaces())
                             .filter(beanNameByClass::containsKey)
                             .findAny();
@@ -111,7 +134,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         return (C) appComponentsByName.get(componentName);
     }
 
-    private static class AppBean implements Comparable<AppBean> {
+    private static class AppBean {
         private final Integer order;
         private final String name;
         private final Method method;
@@ -120,11 +143,6 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
             this.order = order;
             this.name = name;
             this.method = method;
-        }
-
-        @Override
-        public int compareTo(AppBean o) {
-            return this.order - o.order;
         }
     }
 }

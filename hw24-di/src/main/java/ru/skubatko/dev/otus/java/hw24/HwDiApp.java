@@ -2,9 +2,9 @@ package ru.skubatko.dev.otus.java.hw24;
 
 import ru.skubatko.dev.otus.java.hw24.appcontainer.AppComponentsContainerImpl;
 import ru.skubatko.dev.otus.java.hw24.appcontainer.api.AppComponentsContainer;
-import ru.skubatko.dev.otus.java.hw24.config.AppConfig;
+import ru.skubatko.dev.otus.java.hw24.config.AppFirstConfig;
+import ru.skubatko.dev.otus.java.hw24.config.AppSecondConfig;
 import ru.skubatko.dev.otus.java.hw24.services.GameProcessor;
-import ru.skubatko.dev.otus.java.hw24.services.GameProcessorImpl;
 
 /*
 В классе AppComponentsContainerImpl реализовать обработку, полученной в конструкторе конфигурации,
@@ -23,11 +23,11 @@ public class HwDiApp {
         //AppComponentsContainer container = new AppComponentsContainerImpl("ru.otus.config");
 
         // Обязательный вариант
-        AppComponentsContainer container = new AppComponentsContainerImpl(AppConfig.class);
+        AppComponentsContainer container = new AppComponentsContainerImpl(AppFirstConfig.class, AppSecondConfig.class);
 
         // Приложение должно работать в каждом из указанных ниже вариантов
-        // GameProcessor gameProcessor = container.getAppComponent(GameProcessor.class);
-        GameProcessor gameProcessor = container.getAppComponent(GameProcessorImpl.class);
+        GameProcessor gameProcessor = container.getAppComponent(GameProcessor.class);
+        // GameProcessor gameProcessor = container.getAppComponent(GameProcessorImpl.class);
         // GameProcessor gameProcessor = container.getAppComponent("gameProcessor");
 
         gameProcessor.startGame();
