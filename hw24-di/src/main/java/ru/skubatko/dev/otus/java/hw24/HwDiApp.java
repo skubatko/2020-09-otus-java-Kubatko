@@ -4,6 +4,7 @@ import ru.skubatko.dev.otus.java.hw24.appcontainer.AppComponentsContainerImpl;
 import ru.skubatko.dev.otus.java.hw24.appcontainer.api.AppComponentsContainer;
 import ru.skubatko.dev.otus.java.hw24.config.AppConfig;
 import ru.skubatko.dev.otus.java.hw24.services.GameProcessor;
+import ru.skubatko.dev.otus.java.hw24.services.GameProcessorImpl;
 
 /*
 В классе AppComponentsContainerImpl реализовать обработку, полученной в конструкторе конфигурации,
@@ -25,9 +26,9 @@ public class HwDiApp {
         AppComponentsContainer container = new AppComponentsContainerImpl(AppConfig.class);
 
         // Приложение должно работать в каждом из указанных ниже вариантов
-        GameProcessor gameProcessor = container.getAppComponent(GameProcessor.class);
-        //GameProcessor gameProcessor = container.getAppComponent(GameProcessorImpl.class);
-        //GameProcessor gameProcessor = container.getAppComponent("gameProcessor");
+        // GameProcessor gameProcessor = container.getAppComponent(GameProcessor.class);
+        GameProcessor gameProcessor = container.getAppComponent(GameProcessorImpl.class);
+        // GameProcessor gameProcessor = container.getAppComponent("gameProcessor");
 
         gameProcessor.startGame();
     }

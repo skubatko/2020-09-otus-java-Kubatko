@@ -5,6 +5,9 @@ plugins {
 group 'ru.skubatko.dev.otus.java'
 version '0.0.1'
 
+sourceCompatibility = JavaVersion.VERSION_15
+targetCompatibility = JavaVersion.VERSION_15
+
 dependencies {
     implementation 'ch.qos.logback:logback-classic'
 }
