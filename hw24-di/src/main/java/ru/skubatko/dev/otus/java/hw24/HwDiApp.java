@@ -26,9 +26,9 @@ public class HwDiApp {
         AppComponentsContainer container = new AppComponentsContainerImpl(AppFirstConfig.class, AppSecondConfig.class);
 
         // Приложение должно работать в каждом из указанных ниже вариантов
-        GameProcessor gameProcessor = container.getAppComponent(GameProcessor.class);
+        // GameProcessor gameProcessor = container.getAppComponent(GameProcessor.class);
         // GameProcessor gameProcessor = container.getAppComponent(GameProcessorImpl.class);
-        // GameProcessor gameProcessor = container.getAppComponent("gameProcessor");
+        GameProcessor gameProcessor = container.getAppComponent("gameProcessor");
 
         gameProcessor.startGame();
     }

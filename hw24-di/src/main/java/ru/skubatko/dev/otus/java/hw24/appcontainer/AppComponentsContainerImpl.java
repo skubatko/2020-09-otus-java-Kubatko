@@ -9,17 +9,15 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.stream.Collectors;
 
 public class AppComponentsContainerImpl implements AppComponentsContainer {
 
-    private final List<Object> appComponents = new ArrayList<>();
     private final Map<String, Object> appComponentsByName = new HashMap<>();
     private final Map<Class<?>, String> beanNameByClass = new HashMap<>();
     private final Map<Class<?>, Object> configClassInstanceByClass = new HashMap<>();
@@ -67,28 +65,22 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
     private void buildAppComponentsContainer(Class<?>... configClasses) {
         var orderedBeans = getOrderedAppBeans(configClasses);
-        while (!(orderedBeans.isEmpty())) {
-            AppBean bean = orderedBeans.poll();
-            Object beanInstance = getBeanInstance(bean);
-            appComponents.add(beanInstance);
-            appComponentsByName.put(bean.name, beanInstance);
-        }
+        orderedBeans.forEach(appBean -> beanNameByClass.put(appBean.method.getReturnType(), appBean.name));
+        orderedBeans.forEach(appBean -> appComponentsByName.put(appBean.name, getBeanInstance(appBean)));
     }
 
-    private PriorityQueue<AppBean> getOrderedAppBeans(Class<?>... configClasses) {
-        PriorityQueue<AppBean> orderedBeans = new PriorityQueue<>(Comparator.comparingInt(o -> o.order));
-        for (var configClass : configClasses) {
-            for (var method : configClass.getDeclaredMethods()) {
-                if (!(method.isAnnotationPresent(AppComponent.class))) {
-                    continue;
-                }
+    private List<AppBean> getOrderedAppBeans(Class<?>... configClasses) {
+        return Arrays.stream(configClasses)
+                       .flatMap(configClass -> Arrays.stream(configClass.getDeclaredMethods()))
+                       .filter(method -> method.isAnnotationPresent(AppComponent.class))
+                       .map(this::getAppBean)
+                       .sorted(Comparator.comparingInt(AppBean::getOrder))
+                       .collect(Collectors.toList());
+    }
 
-                var annotation = method.getDeclaredAnnotation(AppComponent.class);
-                orderedBeans.add(new AppBean(annotation.order(), annotation.name(), method));
-                beanNameByClass.put(method.getReturnType(), annotation.name());
-            }
-        }
-        return orderedBeans;
+    private AppBean getAppBean(Method method) {
+        var annotation = method.getDeclaredAnnotation(AppComponent.class);
+        return new AppBean(annotation.order(), annotation.name(), method);
     }
 
     private Object getBeanInstance(AppBean bean) {
@@ -143,6 +135,10 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
             this.order = order;
             this.name = name;
             this.method = method;
+        }
+
+        public Integer getOrder() {
+            return order;
         }
     }
 }
