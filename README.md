@@ -1,5 +1,5 @@
 # 2020-09-otus-java-Kubatko
-Курс OTUS "Java Developer. Professional"
+Курс OTUS "Java Developer. Professional".
 
 https://otus.ru/lessons/java-professional
 
@@ -36,9 +36,13 @@ https://otus.ru/lessons/java-professional
 JDBC
 
 * hw20-JPQL - Домашнее задание к уроку 20
+JPQL
 
 * hw21-cache - Домашнее задание к уроку 21
 Типы ссылок. Кэширование.
+
+* hw23-webServer - Домашнее задание к уроку 23
+Web сервер
 
 * hw24-di - Домашнее задание к уроку 24
 Dependency injection. ДЗ
