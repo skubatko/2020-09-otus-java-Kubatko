@@ -43,3 +43,6 @@ JPQL
 
 * hw23-webServer - Домашнее задание к уроку 23
 Web сервер
+
+* hw24-di - Домашнее задание к уроку 24
+Dependency injection. ДЗ
