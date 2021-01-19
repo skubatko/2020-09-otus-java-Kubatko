@@ -67,7 +67,7 @@
     </style>
 </head>
 <body>
-    <h3>Клиенты:</h3>
+    <h3>Пользователи:</h3>
 
     <table class="users">
         <thead>
@@ -94,32 +94,27 @@
     <h3>API:</h3>
 
 
-    <a th:href="@{/api/user?name=%D0%94%D0%B6%D0%B0%D0%BD%D0%B5%D1%82%20%D0%92%D1%8D%D1%80%D0%BD%D0%B8}">
-        Запрос клиента по имени Джанет Вэрни
-    </a>
-    <a th:href="@{/api/user/2}">Запрос клиента с id = 2</a>
+    <a th:href="@{/api/user/2}">Запрос пользователя с id = 2</a>
     <a th:href="@{/api/user/random}">Запрос случайного клиента</a>
     <br/>
     <br/>
 
     <div class="controls-container">
         <input type="text" id = "userIdTextBox" value="3" placeholder="Введите id клиента" >
-        <button onclick="getUser('api/user/', 'userIdTextBox')">Получить клиента по id</button>
+        <button onclick="getUser('api/user/', 'userIdTextBox')">Получить пользователя по id</button>
     </div>
     <div class="controls-container">
-        <select id="usersNamesSelect">
-            <option value="Крис Гир">Крис Гир</option>
-            <option value="Ая Кэш" selected>Ая Кэш</option>
-            <option value="Десмин Боргес">Десмин Боргес</option>
-            <option value="Кетер Донохью">Кетер Донохью</option>
-            <option value="Стивен Шнайдер">Стивен Шнайдер</option>
-            <option value="Джанет Вэрни">Джанет Вэрни</option>
-            <option value="Брэндон Смит">Брэндон Смит</option>
+        <select id="usersLoginSelect">
+            <option value="login1">login1</option>
+            <option value="login2">login2</option>
+            <option value="login3">login3</option>
+            <option value="login4">login4</option>
+            <option value="login5">login5</option>
         </select>
-        <button onclick="getUser('api/user?name=', 'usersNamesSelect')">Получить клиента по имени</button>
+        <button onclick="getUser('api/user?login=', 'usersLoginSelect')">Получить клиента по логину</button>
     </div>
     <div class="controls-container single-button-container">
-        <button onclick="getUser('api/user/random')">Получить случайного клиента</button>
+        <button onclick="getUser('api/user/random')">Получить случайного пользователя</button>
     </div>
 
     <pre id = "userDataContainer"></pre>
