@@ -1,17 +1,17 @@
-package ru.skubatko.dev.otus.java.hw25.dao;
+package ru.skubatko.dev.otus.java.hw25.repository;
 
+import ru.skubatko.dev.otus.java.hw25.domain.Unique;
 import ru.skubatko.dev.otus.java.hw25.hibernate.sessionmanager.DatabaseSessionHibernate;
 import ru.skubatko.dev.otus.java.hw25.hibernate.sessionmanager.SessionManagerHibernate;
-import ru.skubatko.dev.otus.java.hw25.model.Unique;
 import ru.skubatko.dev.otus.java.hw25.sessionmanager.SessionManager;
 
 import org.hibernate.Session;
 
-public abstract class AbstractDao<T extends Unique<K>, K> implements Dao<T, K> {
+public abstract class AbstractRepository<T extends Unique<K>, K> implements Repository<T, K> {
 
     protected final SessionManagerHibernate sessionManager;
 
-    protected AbstractDao(SessionManagerHibernate sessionManager) {
+    protected AbstractRepository(SessionManagerHibernate sessionManager) {
         this.sessionManager = sessionManager;
     }
 
@@ -24,7 +24,7 @@ public abstract class AbstractDao<T extends Unique<K>, K> implements Dao<T, K> {
             hibernateSession.flush();
             return entity.getId();
         } catch (Exception e) {
-            throw new DaoException(e);
+            throw new RepositoryException(e);
         }
     }
 
@@ -35,7 +35,7 @@ public abstract class AbstractDao<T extends Unique<K>, K> implements Dao<T, K> {
             Session hibernateSession = currentSession.getHibernateSession();
             hibernateSession.merge(entity);
         } catch (Exception e) {
-            throw new DaoException(e);
+            throw new RepositoryException(e);
         }
     }
 
@@ -52,7 +52,7 @@ public abstract class AbstractDao<T extends Unique<K>, K> implements Dao<T, K> {
             }
             return entity.getId();
         } catch (Exception e) {
-            throw new DaoException(e);
+            throw new RepositoryException(e);
         }
     }
 
@@ -63,7 +63,7 @@ public abstract class AbstractDao<T extends Unique<K>, K> implements Dao<T, K> {
             Session hibernateSession = currentSession.getHibernateSession();
             hibernateSession.remove(entity);
         } catch (Exception e) {
-            throw new DaoException(e);
+            throw new RepositoryException(e);
         }
     }
 

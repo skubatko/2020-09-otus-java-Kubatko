@@ -1,6 +1,6 @@
 package ru.skubatko.dev.otus.java.hw25.service;
 
-import ru.skubatko.dev.otus.java.hw25.model.Unique;
+import ru.skubatko.dev.otus.java.hw25.domain.Unique;
 
 import java.util.Optional;
 
@@ -14,5 +14,5 @@ public interface DBService<T extends Unique<K>, K> {
 
     K save(T entity);
 
-    Optional<T> getById(K id);
+    Optional<T> findById(K id);
 }

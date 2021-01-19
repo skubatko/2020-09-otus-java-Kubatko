@@ -1,7 +1,7 @@
 package ru.skubatko.dev.otus.java.hw25.service;
 
-import ru.skubatko.dev.otus.java.hw25.dao.Dao;
-import ru.skubatko.dev.otus.java.hw25.model.Unique;
+import ru.skubatko.dev.otus.java.hw25.domain.Unique;
+import ru.skubatko.dev.otus.java.hw25.repository.Repository;
 import ru.skubatko.dev.otus.java.hw25.sessionmanager.SessionManager;
 
 import org.slf4j.Logger;
@@ -11,20 +11,20 @@ import java.util.Optional;
 
 public class DbServiceImpl<T extends Unique<K>, K> implements DBService<T, K> {
 
-    private final Dao<T, K> dao;
+    private final Repository<T, K> repository;
 
     private static final Logger log = LoggerFactory.getLogger(DbServiceImpl.class);
 
-    public DbServiceImpl(Dao<T, K> dao) {
-        this.dao = dao;
+    public DbServiceImpl(Repository<T, K> repository) {
+        this.repository = repository;
     }
 
     @Override
     public K save(T entity) {
-        try (SessionManager sessionManager = dao.getSessionManager()) {
+        try (SessionManager sessionManager = repository.getSessionManager()) {
             sessionManager.beginSession();
             try {
-                K id = dao.insertOrUpdate(entity);
+                K id = repository.insertOrUpdate(entity);
                 sessionManager.commitSession();
 
                 log.info("created entity: {}", id);
@@ -37,11 +37,11 @@ public class DbServiceImpl<T extends Unique<K>, K> implements DBService<T, K> {
     }
 
     @Override
-    public Optional<T> getById(K id) {
-        try (SessionManager sessionManager = dao.getSessionManager()) {
+    public Optional<T> findById(K id) {
+        try (SessionManager sessionManager = repository.getSessionManager()) {
             sessionManager.beginSession();
             try {
-                Optional<T> entity = dao.findById(id);
+                Optional<T> entity = repository.findById(id);
 
                 log.info("entity: {}", entity.orElse(null));
                 return entity;

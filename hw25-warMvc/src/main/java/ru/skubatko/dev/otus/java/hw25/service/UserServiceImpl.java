@@ -1,23 +1,26 @@
 package ru.skubatko.dev.otus.java.hw25.service;
 
-import ru.skubatko.dev.otus.java.hw25.dao.UserDao;
-import ru.skubatko.dev.otus.java.hw25.model.User;
+import ru.skubatko.dev.otus.java.hw25.domain.User;
+import ru.skubatko.dev.otus.java.hw25.repository.UserRepository;
 import ru.skubatko.dev.otus.java.hw25.sessionmanager.SessionManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
+@Service
 public class UserServiceImpl implements UserService {
 
-    private final UserDao dao;
+    private final UserRepository dao;
 
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    public UserServiceImpl(UserDao dao) {
+    public UserServiceImpl(UserRepository dao) {
         this.dao = dao;
     }
 
@@ -49,7 +52,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> getById(Long id) {
+    public Optional<User> findById(Long id) {
         try (SessionManager sessionManager = dao.getSessionManager()) {
             sessionManager.beginSession();
             try {
@@ -80,6 +83,12 @@ public class UserServiceImpl implements UserService {
             }
             return Optional.empty();
         }
+    }
+
+    @Override
+    public User findRandom() {
+        var users = findAll();
+        return users.get(new Random(System.currentTimeMillis()).nextInt(users.size()));
     }
 
     @Override

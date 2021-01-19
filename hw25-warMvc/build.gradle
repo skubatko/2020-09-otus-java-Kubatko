@@ -9,15 +9,6 @@ sourceCompatibility = JavaVersion.VERSION_15
 targetCompatibility = JavaVersion.VERSION_15
 
 dependencies {
-    implementation("com.h2database:h2")
-    implementation("org.hibernate:hibernate-core")
-    implementation 'org.flywaydb:flyway-core'
-
-    implementation("ch.qos.logback:logback-classic")
-    implementation("com.google.code.gson:gson:2.8.6")
-
-    implementation("org.javassist:javassist:3.24.0-GA")
-
     implementation("org.springframework:spring-context")
     implementation("org.springframework:spring-webmvc")
     implementation("org.springframework:spring-web")
@@ -25,10 +16,20 @@ dependencies {
     implementation("org.thymeleaf:thymeleaf-spring5")
     providedCompile("javax.servlet:javax.servlet-api")
 
+    implementation("org.hibernate:hibernate-core")
+    implementation 'org.postgresql:postgresql'
+    implementation 'org.flywaydb:flyway-core'
+
+    implementation("ch.qos.logback:logback-classic")
+    implementation("com.google.code.gson:gson:2.8.6")
+
+    implementation("org.javassist:javassist:3.24.0-GA")
+
     testImplementation("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testImplementation("org.assertj:assertj-core")
     testImplementation("org.mockito:mockito-junit-jupiter")
+    testImplementation("com.h2database:h2")
 
     testCompile("org.springframework:spring-test")
     testCompile("org.hamcrest:hamcrest-core")

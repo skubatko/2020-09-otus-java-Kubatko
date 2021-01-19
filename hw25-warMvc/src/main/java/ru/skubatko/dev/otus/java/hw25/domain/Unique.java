@@ -1,4 +1,4 @@
-package ru.skubatko.dev.otus.java.hw25.model;
+package ru.skubatko.dev.otus.java.hw25.domain;
 
 public interface Unique<K> {
 
