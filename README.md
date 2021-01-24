@@ -46,3 +46,6 @@ Web сервер
 
 * hw24-di - Домашнее задание к уроку 24
 Dependency injection. ДЗ
+
+* hw25-warMvc - Домашнее задание к уроку 25
+War. Spring MVC. ДЗ
