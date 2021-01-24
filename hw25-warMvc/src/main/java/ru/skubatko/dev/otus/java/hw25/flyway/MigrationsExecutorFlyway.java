@@ -17,10 +17,6 @@ public class MigrationsExecutorFlyway {
                          .load();
     }
 
-    public void cleanDb() {
-        flyway.clean();
-    }
-
     public void executeMigrations() {
         log.info("db migration started...");
         flyway.migrate();
