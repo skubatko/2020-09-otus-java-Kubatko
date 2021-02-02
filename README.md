@@ -49,3 +49,6 @@ Dependency injection. ДЗ
 
 * hw25-warMvc - Домашнее задание к уроку 25
 War. Spring MVC. ДЗ
+
+* hw29-executors - Домашнее задание к уроку 29
+Executors. ДЗ
