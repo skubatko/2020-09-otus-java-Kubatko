@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.4.2'
+}
+
+group 'ru.skubatko.dev.otus.java'
+version '0.0.1'
+
+sourceCompatibility = JavaVersion.VERSION_15
+targetCompatibility = JavaVersion.VERSION_15
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    implementation("org.webjars:webjars-locator-core")
+    implementation("org.webjars:sockjs-client:${sockjsVersion}")
+    implementation("org.webjars:stomp-websocket:${stompVersion}")
+    implementation("org.webjars:bootstrap:${bootstrapVersion}")
+
+    implementation 'org.postgresql:postgresql'
+    implementation 'org.flywaydb:flyway-core'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+}
+
+compileJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+    options.with {
+        encoding = 'UTF-8'
+    }
+}
