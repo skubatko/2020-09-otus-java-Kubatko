@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -25,13 +24,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findById(Long id) {
-        return repository.findById(id);
+    public User findById(Long id) {
+        return repository.findById(id).orElseThrow();
     }
 
     @Override
-    public Optional<User> findByLogin(String login) {
-        return repository.findByLogin(login);
+    public User findByLogin(String login) {
+        return repository.findByLogin(login).orElseThrow();
     }
 
     @Override
