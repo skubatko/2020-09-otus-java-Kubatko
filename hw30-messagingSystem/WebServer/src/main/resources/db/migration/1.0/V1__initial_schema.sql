@@ -1,4 +1,4 @@
-create table users
+create table IF NOT EXISTS users
 (
     id       bigserial not null primary key,
     name     varchar(255),
