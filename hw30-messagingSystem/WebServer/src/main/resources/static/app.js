@@ -6,7 +6,7 @@ const setConnected = (connected) => {
   if (connected) {
     $("#user-line").show();
   } else {
-    $("#user-line").hide();
+    $("#user-line").children().remove();
   }
   stompClient.send("/app/users", {}, {})
 }
