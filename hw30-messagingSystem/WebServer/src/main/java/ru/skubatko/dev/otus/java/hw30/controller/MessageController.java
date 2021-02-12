@@ -8,6 +8,7 @@ import ru.skubatko.dev.otus.java.hw30.service.FrontendService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -39,7 +40,7 @@ public class MessageController {
         messagingTemplate.convertAndSend("/topic/response", userMessage);
     }
 
-    @MessageMapping("/user")
+    @MessageMapping("/user/create")
     @SendTo("/topic/response")
     public UserMessage createUser(UserMessage userMessage) {
         log.info("createUser() - start: userMessage = {}", userMessage);
@@ -47,5 +48,12 @@ public class MessageController {
         frontendService.save(user);
         log.info("createUser() - end");
         return new UserMessage(user.getName(), user.getLogin(), user.getPassword());
+    }
+
+    @MessageMapping("/user/delete.{login}")
+    public void deleteUser(@DestinationVariable String login) {
+        log.info("deleteUser() - start: login = {}", login);
+        frontendService.delete(login);
+        log.info("deleteUser() - end");
     }
 }

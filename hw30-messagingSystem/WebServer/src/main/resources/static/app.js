@@ -1,5 +1,14 @@
 let stompClient = null;
 
+$(function () {
+  $("form").on('submit', (event) => {
+    event.preventDefault();
+  });
+  $("#connect").click(connect);
+  $("#disconnect").click(disconnect);
+  $("#send").click(sendUser);
+});
+
 const setConnected = (connected) => {
   $("#connect").prop("disabled", connected);
   $("#disconnect").prop("disabled", !connected);
@@ -20,7 +29,13 @@ const connect = () => {
   });
 }
 
-const showUser = (user) => $("#user-line").append("<tr><td>" + user.name + "</td><td>" + user.login + "</td><td>" + user.password + "</td></tr>")
+const showUser = (user) => $("#user-line")
+  .append("<tr id=" + user.login + ">" +
+    "<td>" + user.name + "</td>" +
+    "<td>" + user.login + "</td>" +
+    "<td>" + user.password + "</td>" +
+    "<td><button id='delete' class='btn btn-default' onclick='deleteUser(\"" + user.login + "\")'>Delete</button></td>" +
+    "</tr>")
 
 const disconnect = () => {
   if (stompClient !== null) {
@@ -30,17 +45,17 @@ const disconnect = () => {
   console.log("Disconnected");
 }
 
-$(function () {
-  $("form").on('submit', (event) => {
-    event.preventDefault();
-  });
-  $("#connect").click(connect);
-  $("#disconnect").click(disconnect);
-  $("#send").click(sendUser);
-});
+const sendUser = () =>
+  stompClient.send("/app/user/create", {}, JSON.stringify({
+    'name': $("#new-user-name").val(),
+    'login': $("#new-user-login").val(),
+    'password': $("#new-user-password").val()
+  }))
 
-const sendUser = () => stompClient.send("/app/user", {}, JSON.stringify({
-  'name': $("#new-user-name").val(),
-  'login': $("#new-user-login").val(),
-  'password': $("#new-user-password").val()
-}))
+const deleteUser = (login) => {
+  stompClient.send("/app/user/delete." + login, {}, {})
+  $("#user-line").children().remove();
+  setTimeout(function () {
+    stompClient.send("/app/users", {}, {})
+  }, 200);
+}

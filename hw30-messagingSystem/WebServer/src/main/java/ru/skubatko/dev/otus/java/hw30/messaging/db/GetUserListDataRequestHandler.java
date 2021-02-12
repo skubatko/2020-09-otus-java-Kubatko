@@ -23,6 +23,6 @@ public class GetUserListDataRequestHandler implements RequestHandler<UserListDat
     @Override
     public Optional<Message> handle(Message msg) {
         UserListData data = toUserListData(service.findAll());
-        return Optional.of(MessageBuilder.buildReplyMessage(msg, data, MessageType.USER_LIST_DATA));
+        return Optional.of(MessageBuilder.buildReplyMessage(msg, data, MessageType.GET_USER_LIST_DATA));
     }
 }

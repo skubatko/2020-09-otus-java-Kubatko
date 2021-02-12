@@ -19,27 +19,17 @@ public class UserServiceImpl implements UserService {
     private final UserRepository repository;
 
     @Override
-    public User save(User user) {
-        return repository.save(user);
-    }
-
-    @Override
-    public User findById(Long id) {
-        return repository.findById(id).orElseThrow();
-    }
-
-    @Override
-    public User findByLogin(String login) {
-        return repository.findByLogin(login).orElseThrow();
-    }
-
-    @Override
     public List<User> findAll() {
         return repository.findAll();
     }
 
     @Override
-    public void delete(User user) {
-        repository.delete(user);
+    public User save(User user) {
+        return repository.save(user);
+    }
+
+    @Override
+    public void deleteByLogin(String login) {
+        repository.deleteByLogin(login);
     }
 }

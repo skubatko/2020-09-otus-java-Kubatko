@@ -1,5 +1,6 @@
 package ru.skubatko.dev.otus.java.hw30.config;
 
+import ru.skubatko.dev.otus.java.hw30.messaging.db.DeleteUserDataRequestHandler;
 import ru.skubatko.dev.otus.java.hw30.messaging.db.GetUserListDataRequestHandler;
 import ru.skubatko.dev.otus.java.hw30.messaging.db.SaveUserDataRequestHandler;
 import ru.skubatko.dev.otus.java.hw30.messaging.front.GetUserListDataResponseHandler;
@@ -29,27 +30,39 @@ public class MessageSystemConfig {
     @Bean
     public CallbackRegistry callbackRegistry() { return new CallbackRegistryImpl();}
 
-    @Bean
-    public MsClient frontendMsClient(
-            SaveUserDataRequestHandler saveUserDataRequestHandler,
+    @Bean(name = "databaseMsClient")
+    public MsClient databaseMsClient(
             GetUserListDataRequestHandler getUserListDataRequestHandler,
+            SaveUserDataRequestHandler saveUserDataRequestHandler,
+            DeleteUserDataRequestHandler deleteUserDataRequestHandler,
+            MessageSystem messageSystem,
+            CallbackRegistry callbackRegistry) {
+        val requestHandlerDatabaseStore = new HandlersStoreImpl();
+        requestHandlerDatabaseStore.addHandler(MessageType.GET_USER_LIST_DATA, getUserListDataRequestHandler);
+        requestHandlerDatabaseStore.addHandler(MessageType.SAVE_USER_DATA, saveUserDataRequestHandler);
+        requestHandlerDatabaseStore.addHandler(MessageType.DELETE_USER_DATA, deleteUserDataRequestHandler);
+
+        val databaseMsClient = new MsClientImpl(appProperties.getDatabaseServiceClientName(),
+                messageSystem, requestHandlerDatabaseStore, callbackRegistry);
+
+        messageSystem.addClient(databaseMsClient);
+
+        return databaseMsClient;
+    }
+
+    @Bean(name = "frontendMsClient")
+    public MsClient frontendMsClient(
             GetUserListDataResponseHandler getUserListDataResponseHandler,
             MessageSystem messageSystem,
             CallbackRegistry callbackRegistry) {
-
-        val requestHandlerDatabaseStore = new HandlersStoreImpl();
-        requestHandlerDatabaseStore.addHandler(MessageType.USER_DATA, saveUserDataRequestHandler);
-        requestHandlerDatabaseStore.addHandler(MessageType.USER_LIST_DATA, getUserListDataRequestHandler);
-        val databaseMsClient = new MsClientImpl(appProperties.getDatabaseServiceClientName(),
-                messageSystem, requestHandlerDatabaseStore, callbackRegistry);
-        messageSystem.addClient(databaseMsClient);
-
         val requestHandlerFrontendStore = new HandlersStoreImpl();
-        requestHandlerFrontendStore.addHandler(MessageType.USER_LIST_DATA, getUserListDataResponseHandler);
+        requestHandlerFrontendStore.addHandler(MessageType.GET_USER_LIST_DATA, getUserListDataResponseHandler);
 
         val frontendMsClient = new MsClientImpl(appProperties.getFrontendServiceClientName(),
                 messageSystem, requestHandlerFrontendStore, callbackRegistry);
+
         messageSystem.addClient(frontendMsClient);
+
         return frontendMsClient;
     }
 }

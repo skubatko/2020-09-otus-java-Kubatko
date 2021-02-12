@@ -10,4 +10,6 @@ public interface FrontendService {
     void findAll(MessageCallback<UserListData> callback);
 
     void save(UserData userData);
+
+    void delete(String login);
 }
