@@ -1,6 +1,6 @@
-package ru.skubatko.dev.otus.java.hw30.messaging;
+package ru.skubatko.dev.otus.java.hw30.messaging.front;
 
-import ru.skubatko.dev.otus.java.hw30.dto.UserData;
+import ru.skubatko.dev.otus.java.hw30.dto.UserListData;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import java.util.Optional;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class GetUserDataResponseHandler implements RequestHandler<UserData> {
+public class GetUserListDataResponseHandler implements RequestHandler<UserListData> {
 
     private final CallbackRegistry callbackRegistry;
 

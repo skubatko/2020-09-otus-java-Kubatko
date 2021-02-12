@@ -38,6 +38,10 @@ spring:
   flyway:
     enabled: true
 
+app:
+  frontend_service_client_name: frontendService
+  database_service_client_name: databaseService
+
 logging:
   level:
     root: INFO

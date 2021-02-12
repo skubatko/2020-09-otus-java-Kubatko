@@ -1,8 +1,9 @@
 package ru.skubatko.dev.otus.java.hw30.controller;
 
-import ru.skubatko.dev.otus.java.hw30.domain.User;
+import ru.skubatko.dev.otus.java.hw30.dto.UserData;
+import ru.skubatko.dev.otus.java.hw30.dto.UserListData;
 import ru.skubatko.dev.otus.java.hw30.dto.UserMessage;
-import ru.skubatko.dev.otus.java.hw30.service.UserService;
+import ru.skubatko.dev.otus.java.hw30.service.FrontendService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,18 +18,23 @@ import org.springframework.stereotype.Controller;
 @RequiredArgsConstructor
 public class MessageController {
 
+    private final FrontendService frontendService;
     private final SimpMessagingTemplate messagingTemplate;
-    private final UserService userService;
 
     @MessageMapping("/users")
     public void generateUserList() {
         log.info("generateUserList() - start");
-        userService.findAll().forEach(this::sendUser);
+        frontendService.findAll(this::sendUsers);
         log.info("generateUserList() - end");
     }
 
-    public void sendUser(User user) {
-        log.info("sendUser() - info: user = {}", user);
+    public void sendUsers(UserListData data) {
+        val users = data.getUsers();
+        log.info("sendUsers() - info: number of users = {}", users.size());
+        users.forEach(this::sendUser);
+    }
+
+    public void sendUser(UserData user) {
         val userMessage = new UserMessage(user.getName(), user.getLogin(), user.getPassword());
         messagingTemplate.convertAndSend("/topic/response", userMessage);
     }
@@ -37,8 +43,8 @@ public class MessageController {
     @SendTo("/topic/response")
     public UserMessage createUser(UserMessage userMessage) {
         log.info("createUser() - start: userMessage = {}", userMessage);
-        val user = new User(userMessage.getName(), userMessage.getLogin(), userMessage.getPassword());
-        userService.save(user);
+        val user = new UserData(userMessage.getName(), userMessage.getLogin(), userMessage.getPassword());
+        frontendService.save(user);
         log.info("createUser() - end");
         return new UserMessage(user.getName(), user.getLogin(), user.getPassword());
     }

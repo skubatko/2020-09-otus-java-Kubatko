@@ -1,0 +1,34 @@
+package ru.skubatko.dev.otus.java.hw30.service;
+
+import ru.skubatko.dev.otus.java.hw30.config.AppProperties;
+import ru.skubatko.dev.otus.java.hw30.dto.UserData;
+import ru.skubatko.dev.otus.java.hw30.dto.UserListData;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import ru.otus.messagesystem.client.MessageCallback;
+import ru.otus.messagesystem.client.MsClient;
+import ru.otus.messagesystem.message.Message;
+import ru.otus.messagesystem.message.MessageType;
+
+@Service
+@RequiredArgsConstructor
+public class FrontendServiceImpl implements FrontendService {
+
+    private final MsClient frontendMsClient;
+    private final AppProperties appProperties;
+
+    @Override
+    public void findAll(MessageCallback<UserListData> callback) {
+        Message outMsg = frontendMsClient.produceMessage(appProperties.getDatabaseServiceClientName(),
+                null, MessageType.USER_LIST_DATA, callback);
+        frontendMsClient.sendMessage(outMsg);
+    }
+
+    @Override
+    public void save(UserData userData) {
+        Message outMsg = frontendMsClient.produceMessage(appProperties.getDatabaseServiceClientName(),
+                userData, MessageType.USER_DATA, data -> {});
+        frontendMsClient.sendMessage(outMsg);
+    }
+}

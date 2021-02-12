@@ -22,9 +22,10 @@ public class MessageBuilder {
         return buildMessage(from, to, sourceMessageId, data, msgType, null);
     }
 
-    public static <T extends ResultDataType> Message buildReplyMessage(Message message, T data) {
+    public static <T extends ResultDataType> Message buildReplyMessage(
+            Message message, T data, MessageType messageType) {
         return buildMessage(message.getTo(), message.getFrom(), message.getId(), data,
-                MessageType.USER_DATA, message.getCallbackId());
+                messageType, message.getCallbackId());
     }
 
     private static <T extends ResultDataType> Message buildMessage(String from, String to, MessageId sourceMessageId,
