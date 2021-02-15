@@ -15,5 +15,7 @@ include 'hw23-webServer'
 include 'hw24-di'
 include 'hw25-warMvc'
 include 'hw29-executors'
+include 'hw30-messagingSystem:MessageSystem'
+include 'hw30-messagingSystem:WebServer'
 include 'hw31-multiprocess'
 

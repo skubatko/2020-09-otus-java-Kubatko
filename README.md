@@ -53,5 +53,8 @@ War. Spring MVC. ДЗ
 * hw29-executors - Домашнее задание к уроку 29
 Executors. ДЗ
 
+* hw30-messagingSystem - Домашнее задание к уроку 30
+Message System. ДЗ
+
 * hw31-multiprocess - Домашнее задание к уроку 31
 Многопроцессные приложения. ДЗ
