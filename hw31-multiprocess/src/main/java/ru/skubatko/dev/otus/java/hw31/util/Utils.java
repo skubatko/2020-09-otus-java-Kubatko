@@ -10,7 +10,7 @@ public final class Utils {
         try {
             Thread.sleep(TimeUnit.SECONDS.toMillis(durationInSeconds));
         } catch (InterruptedException e) {
-            // empty
+            Thread.currentThread().interrupt();
         }
     }
 }

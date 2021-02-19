@@ -58,7 +58,7 @@ public class GenerationServiceImpl implements GenerationService {
     }
 
     @Override
-    public int getLastGenerated() {
+    public synchronized int getLastGenerated() {
         return lastGeneratedValue;
     }
 }

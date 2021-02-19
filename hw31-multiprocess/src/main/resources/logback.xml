@@ -30,7 +30,7 @@
     </appender>
 
     <logger name="ru.skubatko.dev" level="TRACE">
-        <appender-ref ref="FILE-ROLLING"/>
+<!--        <appender-ref ref="FILE-ROLLING"/>-->
     </logger>
 
     <logger name="ch.qos.logback" level="ERROR"/>
